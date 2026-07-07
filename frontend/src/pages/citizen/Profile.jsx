@@ -5,6 +5,7 @@ import { authService } from '../../services/authService';
 import { User, Mail, MapPin, Phone, Shield, Camera, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -73,6 +74,7 @@ const Profile = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <BackButton className="mb-6" />
       <div className="mb-8">
         <h1 className="text-3xl font-display font-bold mb-2">Account Profile</h1>
         <p className="text-gray-500 dark:text-gray-400">Manage your personal information and preferences.</p>

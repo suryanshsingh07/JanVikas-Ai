@@ -13,8 +13,8 @@ router.use(aiLimiter);
 router.post('/analyze', analyzeText);
 router.post('/duplicate-check', duplicateCheck);
 router.post('/language', processLanguage);
-router.get('/recommendations', authorize('official', 'admin'), getRecommendations);
-router.get('/summary', authorize('official', 'admin'), getSummary);
-router.get('/clusters', authorize('official', 'admin'), getClusters);
+router.get('/recommendations', authorize('officer', 'department', 'ngo', 'admin'), getRecommendations);
+router.get('/summary', authorize('officer', 'department', 'ngo', 'admin'), getSummary);
+router.get('/clusters', authorize('officer', 'department', 'ngo', 'admin'), getClusters);
 
 module.exports = router;

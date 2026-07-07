@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Mail, Lock, User, MapPin, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -11,6 +13,7 @@ const Register = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const password = watch('password', '');
 
@@ -32,10 +35,11 @@ const Register = () => {
 
   return (
     <div>
+      <BackButton className="mb-6" />
       <div className="mb-8">
-        <h2 className="text-3xl font-display font-bold mb-2">Create Account</h2>
+        <h2 className="text-3xl font-display font-bold mb-2">{t('auth.register.title')}</h2>
         <p className="text-gray-500 dark:text-gray-400">
-          Join JanVikas AI to voice your local issues.
+          {t('auth.register.subtitle')}
         </p>
       </div>
 
@@ -43,7 +47,7 @@ const Register = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Full Name */}
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium mb-1.5" htmlFor="name">Full Name</label>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="name">{t('auth.register.nameLabel')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <User size={18} />
@@ -52,8 +56,8 @@ const Register = () => {
                 id="name"
                 type="text"
                 className={`w-full pl-10 pr-4 py-2.5 bg-surface border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.name ? 'border-danger' : 'border-border'}`}
-                placeholder="John Doe"
-                {...register('name', { required: 'Name is required' })}
+                placeholder={t('auth.register.namePlaceholder')}
+                {...register('name', { required: t('auth.register.validation.nameRequired') })}
               />
             </div>
             {errors.name && <p className="mt-1.5 text-sm text-danger">{errors.name.message}</p>}
@@ -61,7 +65,7 @@ const Register = () => {
 
           {/* Email */}
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium mb-1.5" htmlFor="email">Email Address</label>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="email">{t('auth.register.emailLabel')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Mail size={18} />
@@ -70,10 +74,10 @@ const Register = () => {
                 id="email"
                 type="email"
                 className={`w-full pl-10 pr-4 py-2.5 bg-surface border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.email ? 'border-danger' : 'border-border'}`}
-                placeholder="you@example.com"
+                placeholder={t('auth.register.emailPlaceholder')}
                 {...register('email', { 
-                  required: 'Email is required',
-                  pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' }
+                  required: t('auth.register.validation.emailRequired'),
+                  pattern: { value: /\S+@\S+\.\S+/, message: t('auth.register.validation.invalidEmail') }
                 })}
               />
             </div>
@@ -82,7 +86,7 @@ const Register = () => {
 
           {/* State */}
           <div>
-            <label className="block text-sm font-medium mb-1.5" htmlFor="state">State</label>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="state">{t('auth.register.stateLabel')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <MapPin size={18} />
@@ -91,8 +95,8 @@ const Register = () => {
                 id="state"
                 type="text"
                 className={`w-full pl-10 pr-4 py-2.5 bg-surface border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.state ? 'border-danger' : 'border-border'}`}
-                placeholder="Maharashtra"
-                {...register('state', { required: 'State is required' })}
+                placeholder={t('auth.register.statePlaceholder')}
+                {...register('state', { required: t('auth.register.validation.stateRequired') })}
               />
             </div>
             {errors.state && <p className="mt-1.5 text-sm text-danger">{errors.state.message}</p>}
@@ -100,7 +104,7 @@ const Register = () => {
 
           {/* District */}
           <div>
-            <label className="block text-sm font-medium mb-1.5" htmlFor="district">District</label>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="district">{t('auth.register.districtLabel')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <MapPin size={18} />
@@ -109,8 +113,8 @@ const Register = () => {
                 id="district"
                 type="text"
                 className={`w-full pl-10 pr-4 py-2.5 bg-surface border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.district ? 'border-danger' : 'border-border'}`}
-                placeholder="Pune"
-                {...register('district', { required: 'District is required' })}
+                placeholder={t('auth.register.districtPlaceholder')}
+                {...register('district', { required: t('auth.register.validation.districtRequired') })}
               />
             </div>
             {errors.district && <p className="mt-1.5 text-sm text-danger">{errors.district.message}</p>}
@@ -118,7 +122,7 @@ const Register = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium mb-1.5" htmlFor="password">Password</label>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="password">{t('auth.register.passwordLabel')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Lock size={18} />
@@ -127,10 +131,10 @@ const Register = () => {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 className={`w-full pl-10 pr-10 py-2.5 bg-surface border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.password ? 'border-danger' : 'border-border'}`}
-                placeholder="••••••••"
+                placeholder={t('auth.register.passwordPlaceholder')}
                 {...register('password', { 
-                  required: 'Password is required',
-                  minLength: { value: 6, message: 'Min 6 characters' }
+                  required: t('auth.register.validation.passwordRequired'),
+                  minLength: { value: 6, message: t('auth.register.validation.passwordMin') }
                 })}
               />
               <button
@@ -146,7 +150,7 @@ const Register = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-sm font-medium mb-1.5" htmlFor="confirmPassword">Confirm Password</label>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="confirmPassword">{t('auth.register.confirmPasswordLabel')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Lock size={18} />
@@ -155,10 +159,10 @@ const Register = () => {
                 id="confirmPassword"
                 type={showPassword ? 'text' : 'password'}
                 className={`w-full pl-10 pr-4 py-2.5 bg-surface border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.confirmPassword ? 'border-danger' : 'border-border'}`}
-                placeholder="••••••••"
+                placeholder={t('auth.register.confirmPasswordPlaceholder')}
                 {...register('confirmPassword', { 
-                  required: 'Confirm password',
-                  validate: value => value === password || 'Passwords do not match'
+                  required: t('auth.register.validation.confirmRequired'),
+                  validate: value => value === password || t('auth.register.validation.passwordMatch')
                 })}
               />
             </div>
@@ -175,7 +179,7 @@ const Register = () => {
             <LoadingSpinner size="sm" />
           ) : (
             <>
-              Create Account
+              {t('auth.register.submitButton')}
               <ArrowRight size={18} />
             </>
           )}
@@ -183,9 +187,9 @@ const Register = () => {
       </form>
 
       <div className="mt-8 text-center text-sm text-gray-500">
-        Already have an account?{' '}
+        {t('auth.register.alreadyHaveAccount')}{' '}
         <Link to="/login" className="text-primary-500 hover:text-primary-600 font-medium">
-          Sign In
+          {t('auth.register.signInLink')}
         </Link>
       </div>
     </div>

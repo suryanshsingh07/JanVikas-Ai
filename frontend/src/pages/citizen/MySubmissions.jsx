@@ -7,6 +7,7 @@ import { formatDate } from '../../utils/formatters';
 import { CATEGORIES, SUBMISSION_STATUSES } from '../../constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { usePagination } from '../../hooks/usePagination';
+import BackButton from '../../components/common/BackButton';
 
 const MySubmissions = () => {
   const [filters, setFilters] = useState({ category: '', status: '', search: '' });
@@ -15,6 +16,7 @@ const MySubmissions = () => {
   const { data, pagination, loading, updateParams } = useSubmissions({
     page,
     limit,
+    mine: true,
     ...filters
   });
 
@@ -36,6 +38,7 @@ const MySubmissions = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold">My Submissions</h1>

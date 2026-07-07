@@ -10,8 +10,8 @@ const { createProjectValidator, updateProjectStatusValidator } = require('../val
 
 router.use(protect);
 
-router.get('/ranked', authorize('official', 'admin'), getRankedProjects);
-router.route('/').get(getProjects).post(authorize('official', 'admin'), createProjectValidator, validate, createProject);
-router.route('/:id').get(getProject).put(authorize('official', 'admin'), updateProject).delete(authorize('admin'), deleteProject);
+router.get('/ranked', authorize('officer', 'department', 'admin'), getRankedProjects);
+router.route('/').get(getProjects).post(authorize('officer', 'department', 'admin'), createProjectValidator, validate, createProject);
+router.route('/:id').get(getProject).put(authorize('officer', 'department', 'admin'), updateProject).delete(authorize('admin'), deleteProject);
 
 module.exports = router;

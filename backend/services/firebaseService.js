@@ -64,6 +64,18 @@ const uploadImages = async (files) => {
 };
 
 /**
+ * Upload multiple video files
+ * @param {Array} files - Multer file array
+ * @returns {Promise<string[]>} Array of public URLs
+ */
+const uploadVideos = async (files) => {
+  const uploadPromises = files.map((file) =>
+    uploadFile(file.buffer, file.originalname, 'videos', file.mimetype)
+  );
+  return Promise.all(uploadPromises);
+};
+
+/**
  * Upload a voice recording
  * @param {Object} file - Multer file object
  * @returns {Promise<string>} Public URL
@@ -105,4 +117,4 @@ const deleteFile = async (fileUrl) => {
   }
 };
 
-module.exports = { uploadFile, uploadImages, uploadVoice, uploadDocuments, deleteFile };
+module.exports = { uploadFile, uploadImages, uploadVideos, uploadVoice, uploadDocuments, deleteFile };

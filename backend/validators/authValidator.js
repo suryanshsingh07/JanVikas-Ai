@@ -28,7 +28,7 @@ const registerValidator = [
 
   body('role')
     .optional()
-    .isIn(['citizen', 'mp']).withMessage('Role must be citizen or mp'),
+    .isIn(['citizen', 'ngo', 'officer', 'department', 'admin']).withMessage('Invalid role selected'),
 
   body('state')
     .optional()

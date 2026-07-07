@@ -91,6 +91,7 @@ const submissionSchema = new mongoose.Schema(
     // ─── Media Files ─────────────────────────────────────
     media: {
       images: [{ type: String }],       // Firebase Storage URLs
+      videos: [{ type: String }],       // Firebase Storage URLs
       voiceRecording: { type: String }, // Firebase Storage URL
       documents: [{ type: String }],    // Firebase Storage URLs
       voiceTranscript: { type: String }, // Transcribed voice text

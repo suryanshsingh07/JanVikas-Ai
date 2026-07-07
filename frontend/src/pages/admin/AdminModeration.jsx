@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ShieldAlert, Check, X, AlertTriangle, Eye, Trash2 } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 // Mock data for hackathon presentation since real moderation API isn't fully built
 const mockFlaggedContent = [
@@ -43,6 +44,7 @@ const AdminModeration = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">

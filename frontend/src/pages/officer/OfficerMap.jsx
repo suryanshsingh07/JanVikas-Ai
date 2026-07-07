@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { getCategory } from '../../utils/helpers';
 import { CATEGORIES, SUBMISSION_STATUSES } from '../../constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 // Fix for default Leaflet icons in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -47,7 +48,7 @@ const MapUpdater = ({ center }) => {
   return null;
 };
 
-const OfficialMap = () => {
+const OfficerMap = () => {
   const { user } = useAuth();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +87,7 @@ const OfficialMap = () => {
 
   return (
     <div className="h-[calc(100vh-120px)] flex flex-col space-y-4">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-2xl font-display font-bold">Geospatial Heatmap</h1>
@@ -169,7 +171,7 @@ const OfficialMap = () => {
                           )}
                         </div>
                         <a 
-                          href={`/official/submissions?id=${sub._id}`} 
+                          href={`/officer/submissions?id=${sub._id}`} 
                           className="block text-center w-full mt-3 bg-blue-600 text-white py-1.5 rounded text-xs font-medium hover:bg-blue-700 transition-colors"
                         >
                           View Details
@@ -198,4 +200,5 @@ const OfficialMap = () => {
   );
 };
 
-export default OfficialMap;
+export default OfficerMap;
+

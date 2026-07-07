@@ -1,4 +1,13 @@
 {
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search"
+  },
   "navbar": {
     "login": "Log in",
     "signup": "Sign up",
@@ -16,7 +25,7 @@
     "userManagement": "User Management",
     "systemReports": "System Reports",
     "citizenPortal": "Citizen Portal",
-    "officialPortal": "Official Portal",
+    "officerPortal": "Official Portal",
     "adminPortal": "Admin Portal"
   },
   "landing": {
@@ -24,6 +33,335 @@
     "title2": "Through Technology",
     "subtitle": "Join the platform that bridges the gap between citizens and their elected representatives using advanced Artificial Intelligence.",
     "getStarted": "Get Started",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "badge": "Live Platform",
+    "badgeMeta": "22 Languages · 145+ Districts · Government Certified",
+    "trustTitle": "Trusted by Government Bodies · Built with Enterprise AI",
+    "problemTitle": "The Problem We Solve",
+    "problemSubtitle": "India's governance gap — the space between a citizen's problem and official action — costs billions in lost productivity and public trust every year.",
+    "beforeTitle": "Before JanVikas AI",
+    "beforePoints": [
+      "Citizens call helplines — get put on hold for hours",
+      "Complaints submitted in English only — excluding 80% of rural India",
+      "No tracking — issues disappear into bureaucracy",
+      "Duplicate reports flood the system, wasting official time",
+      "Officials have no data to prioritise what matters most"
+    ],
+    "afterTitle": "After JanVikas AI",
+    "afterPoints": [
+      "Voice reporting in 22 Indian languages — just speak",
+      "AI instantly categorises, deduplicates, and scores urgency",
+      "Real-time SMS/email updates at every step",
+      "Fraud detection blocks spam before it reaches officials",
+      "Geospatial dashboards show officials exactly where to act"
+    ],
+    "sectionHowItWorksTitle": "How It Works",
+    "sectionHowItWorksSubtitle": "Four steps from citizen complaint to government action.",
+    "sectionFeaturesTitle": "AI Intelligence Layer",
+    "sectionFeaturesSubtitle": "Six breakthrough AI capabilities built for India's governance challenges.",
+    "sectionPreviewTitle": "Live Dashboard Preview",
+    "sectionPreviewSubtitle": "The command centre for modern district governance.",
+    "sectionUseCasesTitle": "Who Uses JanVikas AI?",
+    "sectionUseCasesSubtitle": "A unified intelligence layer for every stakeholder in India's governance ecosystem.",
+    "sectionTestimonialsTitle": "Government Vision",
+    "sectionTestimonialsSubtitle": "Voices from officials who have deployed JanVikas AI.",
+    "sectionFaqTitle": "Frequently Asked",
+    "sectionCtaTitle": "Build Smarter Communities",
+    "sectionCtaHighlight": "with AI",
+    "sectionCtaSubtitle": "Join 145+ districts already transforming citizen governance with AI-powered transparency and accountability.",
+    "sectionContactTitle": "Get In Touch",
+    "sectionContactSubtitle": "Have feedback, want a district deployment, or just curious? We'd love to hear from you.",
+    "previewCards": {
+      "mapView": "Map View",
+      "analytics": "Analytics",
+      "aiRecs": "AI Recs",
+      "priority": "Priority",
+      "mapDesc": "Geospatial heatmap",
+      "analyticsDesc": "Trend analysis",
+      "aiRecsDesc": "Smart priorities",
+      "priorityDesc": "Urgency scoring"
+    },
+    "steps": {
+      "citizenInputTitle": "Citizen Input",
+      "citizenInputDesc": "Voice, text, or image submission in any of 22 languages from any device",
+      "analysisTitle": "AI Analysis",
+      "analysisDesc": "Automatic categorisation, deduplication, sentiment scoring, and geo-tagging",
+      "priorityTitle": "Priority Score",
+      "priorityDesc": "Multi-factor algorithm ranks issues by urgency, equity, and impact",
+      "actionTitle": "Government Action",
+      "actionDesc": "Officials receive AI-briefed agenda and resolve issues with tracked accountability"
+    },
+    "cards": {
+      "voiceTitle": "Voice AI in 22 Languages",
+      "voiceDescription": "Citizens report issues in their native tongue — spoken naturally. AI transcribes, translates, and categorises in real time.",
+      "imageTitle": "Image Verification",
+      "imageDescription": "Attach photos of potholes, broken pipes, or garbage. Our vision model validates and geotags issues automatically.",
+      "fraudTitle": "Fraud Detection",
+      "fraudDescription": "ML models cross-reference submissions to detect duplicate, fake, or politically motivated complaints before they escalate.",
+      "nlpTitle": "NLP Triage Engine",
+      "nlpDescription": "Sentiment analysis, urgency scoring, and semantic clustering — transforming raw text into structured government intelligence.",
+      "heatmapTitle": "AI Heatmaps",
+      "heatmapDescription": "Geospatial intelligence surfaces infrastructure blackspots across the district. Identify the 20% of areas causing 80% of complaints.",
+      "predictiveTitle": "Predictive Analytics",
+      "predictiveDescription": "Forecasting models predict which issues will escalate in the next 30 days before they become a political crisis."
+    },
+    "useCases": {
+      "citizensTitle": "Citizens",
+      "citizensPoint1": "Submit issues in any Indian language",
+      "citizensPoint2": "Real-time status tracking via SMS/Email",
+      "citizensPoint3": "Community voting on priority issues",
+      "citizensPoint4": "Anonymous reporting for sensitive concerns",
+      "officersTitle": "MLAs & Officials",
+      "officialsPoint1": "AI-prioritized morning briefings",
+      "officialsPoint2": "Constituency heatmap dashboard",
+      "officialsPoint3": "Budget allocation recommendations",
+      "officialsPoint4": "Automated weekly progress reports",
+      "departmentsTitle": "Govt. Departments",
+      "departmentsPoint1": "Cross-department issue routing",
+      "departmentsPoint2": "SLA compliance tracking",
+      "departmentsPoint3": "Resource utilization analytics",
+      "departmentsPoint4": "Inter-ministerial coordination layer",
+      "ngosTitle": "NGOs & Research",
+      "ngosPoint1": "Open dataset API access",
+      "ngosPoint2": "Trend reports across time periods",
+      "ngosPoint3": "Policy effectiveness measurement",
+      "ngosPoint4": "Ground-truth validation tools"
+    },
+    "faqs": {
+      "q1": "What languages does JanVikas AI support?",
+      "a1": "JanVikas AI supports all 22 officially recognised languages of India including Hindi, Tamil, Telugu, Kannada, Malayalam, Bengali, Gujarati, Marathi, and more. Citizens can speak, type, or record their issue in their native script.",
+      "q2": "Is the data secure? Who can access citizen submissions?",
+      "a2": "All data is encrypted at rest and in transit. Only verified government officials with role-based access can view submissions in their jurisdiction. Citizens can choose to remain anonymous. The platform is compliant with India's Digital Personal Data Protection Act.",
+      "q3": "How does the AI prioritise issues?",
+      "a3": "Our proprietary 6-factor algorithm scores issues based on: urgency, affected population size, equity index, geographic clustering, historical resolution time, and seasonal risk. Top-scored issues are surfaced first to the relevant official.",
+      "q4": "Can it integrate with existing government systems (PFMS, e-Governance)?",
+      "a4": "Yes. JanVikas AI exposes a RESTful API and webhook system that integrates with PFMS, state-level NIC portals, Aarogya Setu, and other DigiLocker infrastructure. Custom integrations are available for state deployments.",
+      "q5": "How long does it take to deploy for a district?",
+      "a5": "A standard district deployment takes 4–6 weeks including data onboarding, official training, and custom branding. Our team provides 24/7 support during the go-live period."
+    },
+    "testimonials": {
+      "oneName": "District Magistrate, Lucknow",
+      "oneQuote": "JanVikas AI reduced our issue backlog by 60% in the first quarter. The AI prioritisation means we are solving the right problems first.",
+      "twoName": "Senior IAS Officer, Maharashtra",
+      "twoQuote": "The multilingual voice submission is a game-changer. Farmers in remote areas who could never before file a complaint are now being heard.",
+      "threeName": "Municipal Commissioner, Surat",
+      "threeQuote": "The predictive analytics warned us about a water supply issue 3 weeks before it would have become a crisis. We fixed it in time."
+    },
+    "contact": {
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "Rajesh Kumar",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "rajesh@nic.in",
+      "orgLabel": "Organisation / Department",
+      "orgPlaceholder": "District Collectorate, Pune",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "General Inquiry",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Tell us about your district's governance challenges…",
+      "submitButton": "Send Message"
+    },
+    "typewriter": {
+      "aiPowered": "AI-Powered Civic Intelligence",
+      "multilingual": "Multilingual Voice Reporting",
+      "realTime": "Real-time Government Action",
+      "dataDriven": "Data-driven Policy Decisions"
+    }
+  },
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to continue to your portal.",
+    "demoTitle": "Quick Demo Login",
+    "demoFilled": "filled",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign In",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create one",
+    "validation": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Invalid email address",
+      "passwordRequired": "Password is required"
+    }
+  },
+  "dashboard": {
+    "welcomeCitizen": "Welcome back, {{name}} 👋",
+    "welcomeOfficial": "Welcome, {{name}}",
+    "citizenSubtitle": "Here's the status of your reported issues in {{district}}",
+    "officerSubtitle": "Here is the live intelligence overview for {{district}}",
+    "reportIssue": "Report New Issue",
+    "recentSubmissions": "Recent Submissions",
+    "viewAll": "View all",
+    "noSubmissions": "No submissions yet",
+    "noSubmissionsDesc": "You haven't reported any issues yet.",
+    "reportIssueCTA": "Report an Issue",
+    "makeVoiceHeard": "Make Your Voice Heard",
+    "makeVoiceHeardDesc": "Submit local issues using voice, images, or text. Our AI will route it directly to your representative.",
+    "reportIssueNow": "Report Issue Now",
+    "constituencyInfo": "Constituency Info",
+    "state": "State",
+    "district": "District",
+    "representative": "Representative"
+  },
+  "auth": {
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join JanVikas AI to voice your local issues.",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "John Doe",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "stateLabel": "State",
+      "statePlaceholder": "Maharashtra",
+      "districtLabel": "District",
+      "districtPlaceholder": "Pune",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "••••••••",
+      "submitButton": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign In",
+      "validation": {
+        "nameRequired": "Name is required",
+        "emailRequired": "Email is required",
+        "invalidEmail": "Invalid email",
+        "stateRequired": "State is required",
+        "districtRequired": "District is required",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Min 6 characters",
+        "confirmRequired": "Confirm password",
+        "passwordMatch": "Passwords do not match"
+      }
+    },
+    "forgotPassword": {
+      "backToLogin": "Back to login",
+      "title": "Forgot Password",
+      "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "submitButton": "Send Reset Link",
+      "successTitle": "Check your email",
+      "successMessage": "We've sent a password reset link to your email address. Please check your inbox and spam folder.",
+      "validation": {
+        "emailRequired": "Email is required",
+        "invalidEmail": "Invalid email address"
+      },
+      "toastSuccess": "Password reset link sent to your email"
+    }
+  },
+  "footer": {
+    "brandDescription": "Empowering Indian democracy through AI. Bridging the gap between 1.4 billion citizens and their representatives — one complaint at a time.",
+    "sections": {
+      "product": "Product",
+      "platform": "Platform",
+      "resources": "Resources",
+      "legal": "Legal"
+    },
+    "links": {
+      "citizenPortal": "Citizen Portal",
+      "officerDashboard": "Official Dashboard",
+      "adminConsole": "Admin Console",
+      "aiFeatures": "AI Features",
+      "pricing": "Pricing",
+      "howItWorks": "How It Works",
+      "security": "Security",
+      "systemStatus": "System Status",
+      "apiReference": "API Reference",
+      "integrations": "Integrations",
+      "documentation": "Documentation",
+      "caseStudies": "Case Studies",
+      "blogUpdates": "Blog & Updates",
+      "communityForum": "Community Forum",
+      "openData": "Open Data",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "dataProcessing": "Data Processing",
+      "cookiePolicy": "Cookie Policy",
+      "dpdpCompliance": "DPDP Compliance"
+    },
+    "badges": {
+      "meityCertified": "MeitY Certified",
+      "iso27001": "ISO 27001",
+      "dpiitRecognised": "DPIIT Recognised",
+      "systemsOperational": "All Systems Operational",
+      "dpdpActCompliant": "DPDP Act Compliant"
+    },
+    "bottom": {
+      "copyright": "© {{year}} JanVikas AI Technologies Pvt. Ltd. · Built for Bharat 🇮🇳",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
+  },
+  "about": {
+    "title": "About JanVikas AI",
+    "subtitle": "Empowering citizens and enabling responsive governance through Artificial Intelligence.",
+    "missionTitle": "Our Mission",
+    "missionBody": "JanVikas AI was built to solve the fundamental disconnect between citizens and government officials. In a nation as vast and diverse as India, millions of civic issues go unheard due to language barriers, redundant reporting, and manual processing bottlenecks. We leverage GenAI to bridge this gap, ensuring every voice is heard, analyzed, and actioned.",
+    "principlesTitle": "Core Principles",
+    "cards": {
+      "transparencyTitle": "Transparency & Security",
+      "transparencyBody": "Every interaction is securely logged, and citizens have full visibility into the lifecycle of their submissions.",
+      "inclusivityTitle": "Inclusivity",
+      "inclusivityBody": "Language should never be a barrier to governance. Our 12+ language support ensures rural and urban citizens have equal access.",
+      "innovationTitle": "Open Innovation",
+      "innovationBody": "Built using scalable, modern tech stacks to serve as a robust blueprint for state and national IT departments.",
+      "actionTitle": "Data-Driven Action",
+      "actionBody": "We don't just collect complaints; our AI provides prescriptive analytics for optimal budget allocation."
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated: July 2026",
+    "sections": {
+      "informationTitle": "1. Information We Collect",
+      "informationBody": "We collect information to provide better services to all our users. The types of data we collect include:",
+      "accountInfo": "Account Information",
+      "accountInfoBody": "Name, email address, phone number, and location details (district/state).",
+      "submissionData": "Submission Data",
+      "submissionDataBody": "Text, voice recordings, and images submitted as part of civic issues.",
+      "usageData": "Usage Data",
+      "usageDataBody": "Information about how you interact with our Platform.",
+      "useTitle": "2. How We Use Your Information",
+      "useBody": "The information we collect is used to:",
+      "useItem1": "Facilitate the reporting and tracking of civic issues.",
+      "useItem2": "Use AI/NLP models to translate, analyze, and deduplicate submissions.",
+      "useItem3": "Provide officials with aggregated, anonymized demographic and geographic insights.",
+      "useItem4": "Send you updates via SMS or email regarding your submissions.",
+      "processingTitle": "3. AI Processing and Data Retention",
+      "processingBody": "Your voice and text submissions are processed by AI models to generate English/Hindi transcripts and summaries. We do not use personally identifiable information (PII) to train public AI models. Data is securely retained on cloud servers located in India, compliant with data protection regulations.",
+      "sharingTitle": "4. Data Sharing",
+      "sharingBody": "We share your civic submissions (which may include your name and location) with the relevant government officials assigned to your jurisdiction. We do not sell your personal data to third-party marketers.",
+      "rightsTitle": "5. Your Rights",
+      "rightsBody": "You have the right to access, update, or request the deletion of your personal information. You can do so by contacting our support team or via your profile settings."
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last Updated: July 2026",
+    "sections": {
+      "acceptanceTitle": "1. Acceptance of Terms",
+      "acceptanceBody": "By accessing and using the JanVikas AI platform (\"the Platform\"), you agree to comply with and be bound by these Terms of Service. If you do not agree with any part of these terms, you must not use the Platform.",
+      "serviceTitle": "2. Description of Service",
+      "serviceBody": "JanVikas AI is a GovTech SaaS platform designed to facilitate civic engagement between citizens and government officials. The Platform uses AI to translate, deduplicate, and prioritize civic issues.",
+      "conductTitle": "3. User Conduct and Responsibilities",
+      "conductItem1": "You agree to provide accurate and truthful information when reporting civic issues.",
+      "conductItem2": "You agree not to submit false, malicious, or spam requests.",
+      "conductItem3": "You agree not to use the Platform for any illegal or unauthorized purpose.",
+      "conductItem4": "The Platform relies on AI; while we strive for accuracy, automated translations and categorizations may occasionally err.",
+      "privacyTitle": "4. Privacy and Data",
+      "privacyBody": "Your use of the Platform is also governed by our Privacy Policy. By using the Platform, you consent to the collection and use of information as detailed therein.",
+      "liabilityTitle": "5. Limitation of Liability",
+      "liabilityBody": "JanVikas AI is a technological intermediary. We do not guarantee that any civic issue reported through the Platform will be resolved by the respective government authorities. We are not liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use the Platform."
+    }
+  },
+  "languageSwitcher": {
+    "toggleAria": "Toggle language",
+    "current": "Current",
+    "title": "Select Language",
+    "subtitle": "22 Official Languages of India"
   }
 }

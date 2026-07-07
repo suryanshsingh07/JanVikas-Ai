@@ -10,6 +10,7 @@ import { formatDate, formatRelativeTime } from '../../utils/formatters';
 import { SUBMISSION_STATUSES } from '../../constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
+import BackButton from '../../components/common/BackButton';
 
 const TrackSubmission = () => {
   const { id } = useParams();
@@ -51,6 +52,7 @@ const TrackSubmission = () => {
   if (!submission) {
     return (
       <div className="text-center py-12">
+        <BackButton className="mb-6" />
         <h2 className="text-2xl font-bold mb-2">Submission Not Found</h2>
         <p className="text-gray-500 mb-6">The issue you are looking for does not exist or you do not have access to it.</p>
         <Link to="/citizen/submissions" className="text-primary-500 hover:underline">Return to My Submissions</Link>

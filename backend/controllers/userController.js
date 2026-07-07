@@ -49,7 +49,7 @@ const getUser = asyncHandler(async (req, res) => {
  */
 const updateUserRole = asyncHandler(async (req, res) => {
   const { role } = req.body;
-  if (!['citizen', 'official', 'admin'].includes(role)) {
+  if (!['citizen', 'officer', 'department', 'ngo', 'admin'].includes(role)) {
     throw createError('Invalid role', 400);
   }
   const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true });

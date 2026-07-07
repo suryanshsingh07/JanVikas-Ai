@@ -9,8 +9,9 @@ import { getCategory } from '../../utils/helpers';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import BackButton from '../../components/common/BackButton';
 
-const OfficialProjects = () => {
+const OfficerProjects = () => {
   const { user } = useAuth();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -80,6 +81,7 @@ const OfficialProjects = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold">Project Planning</h1>
@@ -229,4 +231,5 @@ const OfficialProjects = () => {
   );
 };
 
-export default OfficialProjects;
+export default OfficerProjects;
+

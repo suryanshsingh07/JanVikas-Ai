@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Users, AlertTriangle, TrendingUp, Briefcase, ArrowRight, BrainCircuit, Activity, MapPin, FileText, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { analyticsService } from '../../services/analyticsService';
@@ -8,9 +9,11 @@ import { aiService } from '../../services/aiService';
 import { SkeletonCard, RecommendationSkeleton } from '../../components/common/SkeletonCard';
 import StatCounter from '../../components/ui/StatCounter';
 import { debounce } from 'lodash';
+import BackButton from '../../components/common/BackButton';
 
-const OfficialDashboard = () => {
+const OfficerDashboard = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,22 +44,23 @@ const OfficialDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold">
-            Welcome, {user?.name.split(' ')[0]}
+            {t('dashboard.welcomeOfficer', { name: user?.name?.split(' ')[0] || '' })}
           </h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Here is the live intelligence overview for {user?.district}.
+            {t('dashboard.OfficerSubtitle', { district: user?.district || '' })}
           </p>
         </div>
         <Link
-          to="/official/projects"
+          to="/officer/projects"
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
           <Briefcase size={18} />
-          Propose Project
+          {t('sidebar.manageProjects')}
         </Link>
       </div>
 
@@ -111,10 +115,10 @@ const OfficialDashboard = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold flex items-center gap-2">
               <BrainCircuit className="text-primary-500" />
-              AI Priority Recommendations
+              {t('sidebar.aiInsights')}
             </h2>
-            <Link to="/official/ai-insights" className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1">
-              View all <ArrowRight size={16} />
+            <Link to="/officer/ai-insights" className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1">
+              {t('dashboard.viewAll')} <ArrowRight size={16} />
             </Link>
           </div>
 
@@ -142,32 +146,32 @@ const OfficialDashboard = () => {
           <div className="glass-card p-5 rounded-xl">
             <h3 className="font-semibold mb-4">Quick Actions</h3>
             <div className="space-y-2">
-              <Link to="/official/map" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
+              <Link to="/officer/map" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
                 <div className="flex items-center gap-3 font-medium text-sm">
                   <div className="w-8 h-8 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-600 flex items-center justify-center">
                     <MapPin size={16} />
                   </div>
-                  Geospatial Map
+                  {t('sidebar.dashboard')}
                 </div>
                 <ArrowRight size={16} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
               </Link>
 
-              <Link to="/official/submissions" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
+              <Link to="/officer/submissions" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
                 <div className="flex items-center gap-3 font-medium text-sm">
                   <div className="w-8 h-8 rounded bg-info/10 text-info flex items-center justify-center">
                     <Users size={16} />
                   </div>
-                  Citizen Requests
+                  {t('sidebar.mySubmissions')}
                 </div>
                 <ArrowRight size={16} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
               </Link>
 
-              <Link to="/official/analytics" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
+              <Link to="/officer/analytics" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
                 <div className="flex items-center gap-3 font-medium text-sm">
                   <div className="w-8 h-8 rounded bg-warning/10 text-warning flex items-center justify-center">
                     <TrendingUp size={16} />
                   </div>
-                  Deep Analytics
+                  {t('sidebar.systemReports')}
                 </div>
                 <ArrowRight size={16} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
               </Link>
@@ -183,10 +187,10 @@ const OfficialDashboard = () => {
               Generate a comprehensive LLM report of this week's constituent demands.
             </p>
             <Link
-              to="/official/ai-insights"
+              to="/officer/ai-insights"
               className="inline-block bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-100 transition-colors relative z-10"
             >
-              Generate Report
+              {t('landing.learnMore')}
             </Link>
           </div>
         </div>
@@ -249,7 +253,7 @@ const RecommendationCard = ({ rec, index }) => {
             <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </button>
           <Link
-            to={`/official/submissions?id=${rec._id}`}
+            to={`/officer/submissions?id=${rec._id}`}
             className="px-4 py-2 bg-foreground text-background text-sm font-medium rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
           >
             Review
@@ -281,4 +285,5 @@ const RecommendationCard = ({ rec, index }) => {
   );
 };
 
-export default OfficialDashboard;
+export default OfficerDashboard;
+

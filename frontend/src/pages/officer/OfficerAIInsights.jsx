@@ -4,8 +4,9 @@ import { aiService } from '../../services/aiService';
 import { BrainCircuit, FileText, Download, Sparkles, Filter, RefreshCw } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
+import BackButton from '../../components/common/BackButton';
 
-const OfficialAIInsights = () => {
+const OfficerAIInsights = () => {
   const { user } = useAuth();
   const [summaryData, setSummaryData] = useState(null);
   const [clustersData, setClustersData] = useState([]);
@@ -45,6 +46,7 @@ const OfficialAIInsights = () => {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
@@ -182,4 +184,5 @@ const OfficialAIInsights = () => {
   );
 };
 
-export default OfficialAIInsights;
+export default OfficerAIInsights;
+

@@ -4,6 +4,7 @@ import { Bell, Check, Trash2, ArrowRight } from 'lucide-react';
 import { NotificationContext } from '../../context/NotificationContext';
 import { formatRelativeTime } from '../../utils/formatters';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 const Notifications = () => {
   const { notifications, loading, markAllAsRead, markAsRead, deleteNotification } = useContext(NotificationContext);
@@ -25,6 +26,7 @@ const Notifications = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold">Notifications</h1>

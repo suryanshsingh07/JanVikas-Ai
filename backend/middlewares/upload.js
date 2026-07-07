@@ -10,6 +10,7 @@ const { createError } = require('../utils/helpers');
 
 // ─── Allowed File Types ───────────────────────────────────
 const ALLOWED_IMAGE_TYPES = /jpeg|jpg|png|gif|webp/;
+const ALLOWED_VIDEO_TYPES = /mp4|mov|avi|mkv|webm/;
 const ALLOWED_AUDIO_TYPES = /mp3|wav|ogg|m4a|webm/;
 const ALLOWED_DOC_TYPES = /pdf|doc|docx|txt/;
 
@@ -70,12 +71,12 @@ const uploadDocuments = multer({
   fileFilter: fileFilter(ALLOWED_DOC_TYPES),
 });
 
-// ─── Mixed Upload (images + voice in one request) ─────────
+// ─── Mixed Upload (images + videos + voice in one request) ─────────
 const uploadMixed = multer({
   storage: memoryStorage,
   limits: {
-    fileSize: 50 * 1024 * 1024,
-    files: 6,
+    fileSize: 100 * 1024 * 1024, // 100 MB to accommodate videos
+    files: 8, // 5 images + 2 videos + 1 voice
   },
 });
 

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Languages, Check } from 'lucide-react';
+import { Languages, Check, Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const languages = [
@@ -30,8 +30,9 @@ const languages = [
 ];
 
 const LanguageSwitcher = ({ className = '' }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -48,7 +49,13 @@ const LanguageSwitcher = ({ className = '' }) => {
     i18n.changeLanguage(code);
     localStorage.setItem('language', code);
     setIsOpen(false);
+    setSearchQuery('');
   };
+
+  const filteredLanguages = languages.filter(lang => 
+    lang.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    lang.nativeName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const currentLang = languages.find(l => l.code === i18n.language) || languages[0];
 
@@ -57,8 +64,8 @@ const LanguageSwitcher = ({ className = '' }) => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`relative w-10 h-10 rounded-full flex items-center justify-center bg-surface hover:bg-surfaceHover border border-border transition-colors group ${className}`}
-        aria-label="Toggle Language"
-        title={`Current: ${currentLang.nativeName}`}
+        aria-label={t('languageSwitcher.toggleAria')}
+        title={`${t('languageSwitcher.current')}: ${currentLang.nativeName}`}
       >
         <Languages className="w-5 h-5 text-primary-500 group-hover:scale-110 transition-transform" />
         <span className="absolute -bottom-1 -right-1 text-[10px] font-bold bg-background px-1 rounded border border-border uppercase">
@@ -75,27 +82,51 @@ const LanguageSwitcher = ({ className = '' }) => {
             transition={{ duration: 0.2 }}
             className="absolute right-0 mt-2 w-64 max-h-96 overflow-y-auto no-scrollbar bg-background border border-border shadow-xl rounded-xl z-50"
           >
-            <div className="sticky top-0 bg-surface/90 backdrop-blur-md px-4 py-3 border-b border-border z-10">
-              <h3 className="font-semibold text-sm">Select Language</h3>
-              <p className="text-xs text-gray-500">22 Official Languages of India</p>
+            <div className="sticky top-0 bg-surface/90 backdrop-blur-md px-4 py-3 border-b border-border z-10 space-y-3">
+              <div>
+                <h3 className="font-semibold text-sm">{t('languageSwitcher.title')}</h3>
+                <p className="text-xs text-gray-500">{t('languageSwitcher.subtitle')}</p>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder={t('common.search')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-surfaceHover border border-border rounded-lg pl-9 pr-8 py-1.5 text-sm focus:outline-none focus:border-primary-500 transition-colors"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
             
             <div className="py-2">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => changeLanguage(lang.code)}
-                  className={`w-full text-left flex items-center justify-between px-4 py-2 text-sm hover:bg-surfaceHover transition-colors ${
-                    i18n.language === lang.code ? 'bg-primary-50/50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium' : 'text-foreground'
-                  }`}
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium">{lang.nativeName}</span>
-                    <span className="text-xs text-gray-500 opacity-80">{lang.name}</span>
-                  </div>
-                  {i18n.language === lang.code && <Check size={16} className="text-primary-500" />}
-                </button>
-              ))}
+              {filteredLanguages.length > 0 ? (
+                filteredLanguages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={`w-full text-left flex items-center justify-between px-4 py-2 text-sm hover:bg-surfaceHover transition-colors ${
+                      i18n.language === lang.code ? 'bg-primary-50/50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium' : 'text-foreground'
+                    }`}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        {lang.nativeName} {lang.name !== lang.nativeName ? `(${lang.name})` : ''}
+                      </span>
+                    </div>
+                    {i18n.language === lang.code && <Check size={16} className="text-primary-500 shrink-0" />}
+                  </button>
+                ))
+              ) : (
+                <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                  No languages found
+                </div>
+              )}
             </div>
           </motion.div>
         )}

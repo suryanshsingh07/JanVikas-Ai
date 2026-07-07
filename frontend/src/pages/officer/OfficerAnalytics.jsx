@@ -6,10 +6,11 @@ import {
 import { analyticsService } from '../../services/analyticsService';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9'];
 
-const OfficialAnalytics = () => {
+const OfficerAnalytics = () => {
   const { user } = useAuth();
   const [categoriesData, setCategoriesData] = useState([]);
   const [trendsData, setTrendsData] = useState([]);
@@ -50,6 +51,7 @@ const OfficialAnalytics = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="mb-8">
         <h1 className="text-2xl font-display font-bold">Constituency Analytics</h1>
         <p className="text-gray-500 dark:text-gray-400">Deep dive into submission data, trends, and category breakdowns.</p>
@@ -174,4 +176,5 @@ const OfficialAnalytics = () => {
   );
 };
 
-export default OfficialAnalytics;
+export default OfficerAnalytics;
+

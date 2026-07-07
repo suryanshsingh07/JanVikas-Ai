@@ -1,8 +1,10 @@
 import { FileBarChart, Download, Calendar, Filter } from 'lucide-react';
+import BackButton from '../../components/common/BackButton';
 
 const AdminReports = () => {
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">

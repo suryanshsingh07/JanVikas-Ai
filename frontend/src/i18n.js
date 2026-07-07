@@ -51,15 +51,29 @@ const resources = {
   ur: { translation: urTranslations }
 };
 
+const savedLanguage = typeof window !== 'undefined' ? localStorage.getItem('language') : null;
+const initialLanguage = savedLanguage || 'en';
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: localStorage.getItem('language') || 'en', // default language
+    lng: initialLanguage,
     fallbackLng: 'en',
+    supportedLngs: Object.keys(resources),
     interpolation: {
-      escapeValue: false // react already safes from xss
+      escapeValue: false
+    },
+    react: {
+      useSuspense: false
     }
   });
+
+if (typeof window !== 'undefined') {
+  const currentLanguage = localStorage.getItem('language');
+  if (currentLanguage && currentLanguage !== i18n.language) {
+    i18n.changeLanguage(currentLanguage);
+  }
+}
 
 export default i18n;

@@ -1,37 +1,39 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Activity, ShieldCheck, Github, Twitter, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const year = new Date().getFullYear();
 
   const links = {
-    Product: [
-      { label: 'Citizen Portal', to: '/citizen' },
-      { label: 'Official Dashboard', to: '/official' },
-      { label: 'Admin Console', to: '/admin' },
-      { label: 'AI Features', href: '#features' },
-      { label: 'Pricing', to: '/pricing' },
+    [t('footer.sections.product')]: [
+      { label: t('footer.links.citizenPortal'), to: '/citizen' },
+      { label: t('footer.links.officerDashboard'), to: '/officer' },
+      { label: t('footer.links.adminConsole'), to: '/admin' },
+      { label: t('footer.links.aiFeatures'), href: '#features' },
+      { label: t('footer.links.pricing'), to: '/pricing' },
     ],
-    Platform: [
-      { label: 'How It Works', href: '#how-it-works' },
-      { label: 'Security', href: '#' },
-      { label: 'System Status', href: '#' },
-      { label: 'API Reference', href: '#' },
-      { label: 'Integrations', href: '#' },
+    [t('footer.sections.platform')]: [
+      { label: t('footer.links.howItWorks'), href: '#how-it-works' },
+      { label: t('footer.links.security'), href: '#' },
+      { label: t('footer.links.systemStatus'), href: '#' },
+      { label: t('footer.links.apiReference'), href: '#' },
+      { label: t('footer.links.integrations'), href: '#' },
     ],
-    Resources: [
-      { label: 'Documentation', href: '#' },
-      { label: 'Case Studies', href: '#' },
-      { label: 'Blog & Updates', href: '#' },
-      { label: 'Community Forum', href: '#' },
-      { label: 'Open Data', href: '#' },
+    [t('footer.sections.resources')]: [
+      { label: t('footer.links.documentation'), href: '#' },
+      { label: t('footer.links.caseStudies'), href: '#' },
+      { label: t('footer.links.blogUpdates'), href: '#' },
+      { label: t('footer.links.communityForum'), href: '#' },
+      { label: t('footer.links.openData'), href: '#' },
     ],
-    Legal: [
-      { label: 'Privacy Policy', to: '/privacy' },
-      { label: 'Terms of Service', to: '/terms' },
-      { label: 'Data Processing', href: '#' },
-      { label: 'Cookie Policy', href: '#' },
-      { label: 'DPDP Compliance', href: '#' },
+    [t('footer.sections.legal')]: [
+      { label: t('footer.links.privacyPolicy'), to: '/privacy' },
+      { label: t('footer.links.termsOfService'), to: '/terms' },
+      { label: t('footer.links.dataProcessing'), href: '#' },
+      { label: t('footer.links.cookiePolicy'), href: '#' },
+      { label: t('footer.links.dpdpCompliance'), href: '#' },
     ],
   };
 
@@ -51,7 +53,7 @@ const Footer = () => {
               </span>
             </Link>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed max-w-xs">
-              Empowering Indian democracy through AI. Bridging the gap between 1.4 billion citizens and their representatives — one complaint at a time.
+              {t('footer.brandDescription')}
             </p>
 
             {/* Contact info */}
@@ -110,11 +112,11 @@ const Footer = () => {
         <div className="py-6 border-y border-border mb-6">
           <div className="flex flex-wrap items-center justify-center gap-4">
             {[
-              { icon: <ShieldCheck size={14} />, text: 'MeitY Certified' },
-              { icon: <ShieldCheck size={14} />, text: 'ISO 27001' },
-              { icon: <ShieldCheck size={14} />, text: 'DPIIT Recognised' },
-              { icon: <Activity size={14} />, text: 'All Systems Operational', accent: true },
-              { icon: <ShieldCheck size={14} />, text: 'DPDP Act Compliant' },
+              { icon: <ShieldCheck size={14} />, text: t('footer.badges.meityCertified') },
+              { icon: <ShieldCheck size={14} />, text: t('footer.badges.iso27001') },
+              { icon: <ShieldCheck size={14} />, text: t('footer.badges.dpiitRecognised') },
+              { icon: <Activity size={14} />, text: t('footer.badges.systemsOperational'), accent: true },
+              { icon: <ShieldCheck size={14} />, text: t('footer.badges.dpdpActCompliant') },
             ].map((b) => (
               <div
                 key={b.text}
@@ -133,11 +135,11 @@ const Footer = () => {
 
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <p>© {year} JanVikas AI Technologies Pvt. Ltd. · Built for Bharat 🇮🇳</p>
+          <p>{t('footer.bottom.copyright', { year })}</p>
           <div className="flex gap-6">
-            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-            <a href="#contact" className="hover:text-foreground transition-colors">Contact</a>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">{t('footer.bottom.privacy')}</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">{t('footer.bottom.terms')}</Link>
+            <a href="#contact" className="hover:text-foreground transition-colors">{t('footer.bottom.contact')}</a>
           </div>
         </div>
       </div>

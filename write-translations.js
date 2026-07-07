@@ -4,6 +4,34 @@ const path = require('path');
 const localesDir = path.join(__dirname, 'frontend/src/locales');
 
 const translations = {
+  en: {
+    navbar: { login: "Login", signup: "Sign Up", notifications: "Notifications", viewAllNotifications: "View All Notifications", accountSettings: "Account Settings", logout: "Log Out" },
+    sidebar: { dashboard: "Dashboard", mySubmissions: "My Submissions", reportIssue: "Report Issue", aiInsights: "AI Insights", manageProjects: "Manage Projects", userManagement: "User Management", systemReports: "System Reports", citizenPortal: "Citizen Portal", officerPortal: "Officer Portal", adminPortal: "Admin Portal" },
+    landing: { title1: "Empowering Democracy", title2: "Through Technology", subtitle: "Join the platform bridging the gap between citizens and their elected representatives using advanced Artificial Intelligence.", getStarted: "Get Started", learnMore: "Learn More" },
+    login: {
+      title: "Welcome Back",
+      subtitle: "Sign in to access your JanVikas AI dashboard.",
+      demoTitle: "Quick Demo Login",
+      demoFilled: "credentials filled — click Sign In",
+      emailLabel: "Email Address",
+      emailPlaceholder: "you@example.com",
+      passwordLabel: "Password",
+      passwordPlaceholder: "••••••••",
+      forgotPassword: "Forgot password?",
+      signInButton: "Sign In",
+      noAccount: "Don't have an account?",
+      createAccount: "Create an account"
+    },
+    adminUsers: {
+      subtitle: "View, search, and manage all platform users.",
+      searchPlaceholder: "Search by name, email, or district...",
+      allRoles: "All Roles", anyStatus: "Any Status", noUsers: "No users found.",
+      table: { user: "User", role: "Role", location: "Location", joined: "Joined", status: "Status", actions: "Actions" },
+      actions: { editRole: "Edit Role", deleteUser: "Delete User" }
+    },
+    roles: { citizen: "Citizen", official: "Official", admin: "Admin" },
+    pagination: { prev: "Prev", next: "Next" }
+  },
   as: {
     navbar: { login: "লগ ইন", signup: "চাইন আপ", notifications: "জাননী", viewAllNotifications: "সকলো জাননী চাওক", accountSettings: "একাউণ্ট ছেটিংছ", logout: "লগ আউট" },
     sidebar: { dashboard: "ডেছবৰ্ড", mySubmissions: "মোৰ আবেদনসমূহ", reportIssue: "সমস্যা জনাওক", aiInsights: "AI বিশ্লেষণ", manageProjects: "প্ৰকল্প পৰিচালনা কৰক", userManagement: "ব্যৱহাৰকাৰী ব্যৱস্থাপনা", systemReports: "ছিষ্টেম ৰিপোৰ্ট", citizenPortal: "নাগৰিক পৰ্টেল", officialPortal: "বিষয়া পৰ্টেল", adminPortal: "প্ৰশাসক পৰ্টেল" },

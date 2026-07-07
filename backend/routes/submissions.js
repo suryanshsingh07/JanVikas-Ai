@@ -20,9 +20,10 @@ router.route('/')
   .get(listSubmissionsValidator, validate, getSubmissions)
   .post(
     uploadLimiter,
-    // Handle mixed file uploads (images + voice)
+    // Handle mixed file uploads (images + videos + voice)
     require('../middlewares/upload').uploadMixed.fields([
       { name: 'images', maxCount: 5 },
+      { name: 'videos', maxCount: 2 },
       { name: 'voice', maxCount: 1 },
     ]),
     createSubmissionValidator,
@@ -32,7 +33,7 @@ router.route('/')
 
 router.get('/map', getMapSubmissions);
 router.get('/:id', getSubmission);
-router.put('/:id/status', authorize('official', 'admin'), updateStatus);
+router.put('/:id/status', authorize('officer', 'department', 'ngo', 'admin'), updateStatus);
 router.post('/:id/vote', voteSubmission);
 router.delete('/:id', deleteSubmission);
 

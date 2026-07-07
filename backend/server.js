@@ -25,6 +25,7 @@ const analyticsRoutes = require('./routes/analytics');
 const notificationRoutes = require('./routes/notifications');
 const aiRoutes = require('./routes/ai');
 const adminRoutes = require('./routes/admin');
+const accountRoutes = require('./routes/accounts');
 
 // ─── Initialize App ───────────────────────────────────────
 const app = express();
@@ -99,6 +100,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/accounts', accountRoutes);
+app.use('/api/public', require('./routes/public'));
 
 // ─── Root Route ───────────────────────────────────────────
 app.get('/', (req, res) => {

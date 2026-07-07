@@ -106,8 +106,8 @@ const toggleAdminUserStatus = asyncHandler(async (req, res) => {
  */
 const updateAdminUserRole = asyncHandler(async (req, res) => {
   const { role } = req.body;
-  if (!['citizen', 'official', 'admin'].includes(role)) {
-    throw createError('Invalid role. Must be citizen, official, or admin.', 400);
+  if (!['citizen', 'officer', 'department', 'ngo', 'admin'].includes(role)) {
+    throw createError('Invalid role.', 400);
   }
 
   const user = await User.findByIdAndUpdate(
@@ -151,7 +151,7 @@ const deleteAdminUser = asyncHandler(async (req, res) => {
 const getAdminStats = asyncHandler(async (req, res) => {
   const [
     totalUsers,
-    officialCount,
+    officerCount,
     citizenCount,
     totalSubmissions,
     pendingSubmissions,
@@ -162,7 +162,7 @@ const getAdminStats = asyncHandler(async (req, res) => {
     thisWeekUsers,
   ] = await Promise.all([
     User.countDocuments({}),
-    User.countDocuments({ role: 'official' }),
+    User.countDocuments({ role: 'officer' }),
     User.countDocuments({ role: 'citizen' }),
     Submission.countDocuments({}),
     Submission.countDocuments({ status: 'pending' }),
@@ -184,7 +184,7 @@ const getAdminStats = asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: {
-      users: { total: totalUsers, officials: officialCount, citizens: citizenCount, newThisWeek: thisWeekUsers },
+      users: { total: totalUsers, officers: officerCount, citizens: citizenCount, newThisWeek: thisWeekUsers },
       submissions: { total: totalSubmissions, pending: pendingSubmissions, resolved: resolvedSubmissions, resolutionRate, newThisWeek: thisWeekSubmissions },
       projects: { total: totalProjects, active: activeProjects },
     },

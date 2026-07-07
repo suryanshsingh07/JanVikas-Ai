@@ -10,8 +10,9 @@ import { usePagination } from '../../hooks/usePagination';
 import { submissionService } from '../../services/submissionService';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../hooks/useAuth';
+import BackButton from '../../components/common/BackButton';
 
-const OfficialSubmissions = () => {
+const OfficerSubmissions = () => {
   const { user } = useAuth();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -46,7 +47,7 @@ const OfficialSubmissions = () => {
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
-      await submissionService.updateStatus(id, newStatus, `Status updated to ${newStatus} by Official office.`);
+      await submissionService.updateStatus(id, newStatus, `Status updated to ${newStatus} by Officer office.`);
       toast.success('Status updated successfully');
       refresh();
     } catch (error) {
@@ -56,6 +57,7 @@ const OfficialSubmissions = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold">All Submissions</h1>
@@ -271,4 +273,5 @@ const OfficialSubmissions = () => {
   );
 };
 
-export default OfficialSubmissions;
+export default OfficerSubmissions;
+

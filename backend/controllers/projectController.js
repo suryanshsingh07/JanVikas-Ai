@@ -3,6 +3,7 @@
  */
 
 const Project = require('../models/Project');
+const Submission = require('../models/Submission'); // Required for population
 const { createError, asyncHandler, getPagination } = require('../utils/helpers');
 const { rankProjects } = require('../services/recommendationService');
 
@@ -69,7 +70,7 @@ const createProject = asyncHandler(async (req, res) => {
   const project = await Project.create({
     ...req.body,
     createdBy: req.user._id,
-    assignedOfficial: req.user.role === 'official' ? req.user._id : req.body.assignedOfficial,
+    assignedOfficial: req.user.role === 'officer' ? req.user._id : req.body.assignedOfficial,
   });
 
   res.status(201).json({ success: true, message: 'Project created.', project });

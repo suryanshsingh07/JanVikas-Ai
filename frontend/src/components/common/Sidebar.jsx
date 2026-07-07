@@ -32,18 +32,33 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           { name: t('sidebar.reportIssue'), path: '/citizen/submit', icon: PlusCircle },
           { name: t('sidebar.mySubmissions'), path: '/citizen/submissions', icon: FileText },
         ];
-      case 'official':
+      case 'officer':
         return [
-          { name: t('sidebar.dashboard'), path: '/official', icon: LayoutDashboard },
-          { name: t('sidebar.aiInsights'), path: '/official/ai-insights', icon: BrainCircuit },
-          { name: 'Submissions Map', path: '/official/map', icon: Map },
-          { name: 'All Submissions', path: '/official/submissions', icon: FileText },
-          { name: t('sidebar.manageProjects'), path: '/official/projects', icon: Briefcase },
-          { name: 'Analytics', path: '/official/analytics', icon: BarChart3 },
+          { name: t('sidebar.dashboard'), path: '/officer', icon: LayoutDashboard },
+          { name: 'Account Management', path: '/officer/accounts', icon: Users },
+          { name: t('sidebar.aiInsights'), path: '/officer/ai-insights', icon: BrainCircuit },
+          { name: 'Submissions Map', path: '/officer/map', icon: Map },
+          { name: 'All Submissions', path: '/officer/submissions', icon: FileText },
+          { name: t('sidebar.manageProjects'), path: '/officer/projects', icon: Briefcase },
+          { name: 'Analytics', path: '/officer/analytics', icon: BarChart3 },
+        ];
+      case 'department':
+        return [
+          { name: t('sidebar.dashboard'), path: '/department', icon: LayoutDashboard },
+          { name: 'Account Management', path: '/department/accounts', icon: Users },
+          { name: 'All Submissions', path: '/department/submissions', icon: FileText },
+          { name: t('sidebar.manageProjects'), path: '/department/projects', icon: Briefcase },
+          { name: 'Analytics', path: '/department/analytics', icon: BarChart3 },
+        ];
+      case 'ngo':
+        return [
+          { name: t('sidebar.dashboard'), path: '/ngo', icon: LayoutDashboard },
+          { name: 'All Submissions', path: '/ngo/submissions', icon: FileText },
         ];
       case 'admin':
         return [
           { name: 'Overview', path: '/admin', icon: LayoutDashboard },
+          { name: 'Account Management', path: '/admin/accounts', icon: Users },
           { name: t('sidebar.userManagement'), path: '/admin/users', icon: Users },
           { name: t('sidebar.manageProjects'), path: '/admin/projects', icon: Briefcase },
           { name: 'Content Moderation', path: '/admin/moderation', icon: ShieldAlert },

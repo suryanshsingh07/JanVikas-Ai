@@ -39,8 +39,15 @@ const userSchema = new mongoose.Schema(
     // ─── Role & Access ───────────────────────────────────
     role: {
       type: String,
-      enum: ['citizen', 'official', 'admin'],
+      enum: ['citizen', 'officer', 'department', 'ngo', 'admin'],
       default: 'citizen',
+    },
+    
+    // ─── Hierarchy Tracking ──────────────────────────────
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     },
 
     // ─── Location ────────────────────────────────────────
@@ -54,8 +61,8 @@ const userSchema = new mongoose.Schema(
     bio: { type: String, maxlength: [500, 'Bio cannot exceed 500 characters'] },
     language: { type: String, default: 'en' },
 
-    // ─── Official-specific fields ───────────────────────────────
-    officialDetails: {
+    // ─── Officer-specific fields ───────────────────────────────
+    officerDetails: {
       departmentName: { type: String },
       jurisdiction: { type: String },
       state: { type: String },

@@ -10,6 +10,7 @@ import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 import { useGeolocation } from '../../hooks/useGeolocation';
 import { CATEGORIES, LANGUAGES } from '../../constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 const SubmitIssue = () => {
   const { user } = useAuth();
@@ -17,6 +18,8 @@ const SubmitIssue = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [videos, setVideos] = useState([]);
+  const [videoPreviews, setVideoPreviews] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('hi-IN'); // Default to Hindi
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
@@ -49,8 +52,8 @@ const SubmitIssue = () => {
   // Handle Image Upload
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + images.length > 3) {
-      toast.error('You can only upload a maximum of 3 images');
+    if (files.length + images.length > 5) {
+      toast.error('You can only upload a maximum of 5 images');
       return;
     }
 
@@ -71,6 +74,41 @@ const SubmitIssue = () => {
     URL.revokeObjectURL(newPreviews[index]); // Free memory
     newPreviews.splice(index, 1);
     setImagePreviews(newPreviews);
+  };
+
+  // Handle Video Upload
+  const handleVideoChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + videos.length > 2) {
+      toast.error('You can only upload a maximum of 2 videos');
+      return;
+    }
+
+    // Check size limit for each video (e.g. 50MB)
+    const validFiles = files.filter(file => {
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error(`Video ${file.name} exceeds 50MB limit`);
+        return false;
+      }
+      return true;
+    });
+
+    const newVideos = [...videos, ...validFiles];
+    setVideos(newVideos);
+
+    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+    setVideoPreviews([...videoPreviews, ...newPreviews]);
+  };
+
+  const removeVideo = (index) => {
+    const newVideos = [...videos];
+    newVideos.splice(index, 1);
+    setVideos(newVideos);
+
+    const newPreviews = [...videoPreviews];
+    URL.revokeObjectURL(newPreviews[index]); // Free memory
+    newPreviews.splice(index, 1);
+    setVideoPreviews(newPreviews);
   };
 
   const onSubmit = async (data) => {
@@ -104,6 +142,11 @@ const SubmitIssue = () => {
         formData.append('images', image);
       });
 
+      // Append videos
+      videos.forEach(video => {
+        formData.append('videos', video);
+      });
+
       // We're omitting voice blob upload here for simplicity, using just the transcript 
       // which is already appended to the description. For full implementation, we'd append the audioBlob.
 
@@ -122,6 +165,7 @@ const SubmitIssue = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <BackButton className="mb-6" />
       <div className="mb-8">
         <h1 className="text-3xl font-display font-bold mb-2">Report an Issue</h1>
         <p className="text-gray-500 dark:text-gray-400">
@@ -262,41 +306,79 @@ const SubmitIssue = () => {
           </div>
 
           {/* Media */}
-          <div className="glass-card p-6 rounded-xl">
-            <h2 className="text-lg font-semibold border-b border-border pb-3 mb-4 flex items-center justify-between">
-              Photos 
-              <span className="text-xs font-normal text-gray-500">Max 3</span>
-            </h2>
-            
-            <div className="space-y-4">
-              {/* Upload Button */}
-              {images.length < 3 && (
-                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-lg cursor-pointer transition-colors">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-6 h-6 text-gray-400 mb-2" />
-                    <p className="text-xs text-gray-500">Click to upload images</p>
-                  </div>
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} />
-                </label>
-              )}
-
-              {/* Previews */}
-              {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {imagePreviews.map((url, idx) => (
-                    <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
-                      <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(idx)}
-                        className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger"
-                      >
-                        <X size={14} />
-                      </button>
+          <div className="glass-card p-6 rounded-xl flex flex-col gap-6">
+            <div>
+              <h2 className="text-lg font-semibold border-b border-border pb-3 mb-4 flex items-center justify-between">
+                Photos 
+                <span className="text-xs font-normal text-gray-500">Max 5</span>
+              </h2>
+              
+              <div className="space-y-4">
+                {/* Upload Button */}
+                {images.length < 5 && (
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-lg cursor-pointer transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="w-6 h-6 text-gray-400 mb-2" />
+                      <p className="text-xs text-gray-500">Click to upload images</p>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} />
+                  </label>
+                )}
+
+                {/* Previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {imagePreviews.map((url, idx) => (
+                      <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
+                        <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold border-b border-border pb-3 mb-4 flex items-center justify-between">
+                Videos
+                <span className="text-xs font-normal text-gray-500">Max 2</span>
+              </h2>
+              
+              <div className="space-y-4">
+                {videos.length < 2 && (
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-lg cursor-pointer transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="w-6 h-6 text-gray-400 mb-2" />
+                      <p className="text-xs text-gray-500">Click to upload videos</p>
+                    </div>
+                    <input type="file" accept="video/*" multiple className="hidden" onChange={handleVideoChange} />
+                  </label>
+                )}
+
+                {videoPreviews.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {videoPreviews.map((url, idx) => (
+                      <div key={idx} className="relative group aspect-video rounded-lg overflow-hidden border border-border bg-black">
+                        <video src={url} className="w-full h-full object-cover" controls />
+                        <button
+                          type="button"
+                          onClick={() => removeVideo(idx)}
+                          className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger z-10"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

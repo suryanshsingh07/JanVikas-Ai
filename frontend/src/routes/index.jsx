@@ -25,13 +25,13 @@ import TrackSubmission from '../pages/citizen/TrackSubmission';
 import CitizenProfile from '../pages/citizen/Profile';
 import CitizenNotifications from '../pages/citizen/Notifications';
 
-// Official Pages
-import OfficialDashboard from '../pages/official/OfficialDashboard';
-import OfficialAnalytics from '../pages/official/OfficialAnalytics';
-import OfficialProjects from '../pages/official/OfficialProjects';
-import OfficialMap from '../pages/official/OfficialMap';
-import OfficialAIInsights from '../pages/official/OfficialAIInsights';
-import OfficialSubmissions from '../pages/official/OfficialSubmissions';
+// Officer Pages
+import OfficerDashboard from '../pages/officer/OfficerDashboard';
+import OfficerAnalytics from '../pages/officer/OfficerAnalytics';
+import OfficerProjects from '../pages/officer/OfficerProjects';
+import OfficerMap from '../pages/officer/OfficerMap';
+import OfficerAIInsights from '../pages/officer/OfficerAIInsights';
+import OfficerSubmissions from '../pages/officer/OfficerSubmissions';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -41,6 +41,15 @@ import AdminModeration from '../pages/admin/AdminModeration';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminDatasets from '../pages/admin/AdminDatasets';
 
+// Shared Pages
+import AccountManagement from '../pages/shared/AccountManagement';
+
+// Department Pages
+import DepartmentDashboard from '../pages/department/DepartmentDashboard';
+
+// NGO Pages
+import NGODashboard from '../pages/ngo/NGODashboard';
+
 const AppRoutes = () => {
   const { user } = useAuth();
 
@@ -48,7 +57,9 @@ const AppRoutes = () => {
   const getRootRedirect = () => {
     if (!user) return '/';
     if (user.role === 'admin') return '/admin';
-    if (user.role === 'official') return '/official';
+    if (user.role === 'officer') return '/officer';
+    if (user.role === 'department') return '/department';
+    if (user.role === 'ngo') return '/ngo';
     return '/citizen';
   };
 
@@ -84,29 +95,52 @@ const AppRoutes = () => {
           </Route>
         </Route>
 
-        {/* Official Routes */}
-        <Route path="/official" element={<RoleRoute allowedRoles={['official', 'admin']} />}>
+        {/* Officer Routes */}
+        <Route path="/officer" element={<RoleRoute allowedRoles={['officer', 'admin']} />}>
           <Route element={<DashboardLayout />}>
-            <Route index element={<OfficialDashboard />} />
-            <Route path="analytics" element={<OfficialAnalytics />} />
-            <Route path="submissions" element={<OfficialSubmissions />} />
-            <Route path="projects" element={<OfficialProjects />} />
-            <Route path="map" element={<OfficialMap />} />
-            <Route path="ai-insights" element={<OfficialAIInsights />} />
+            <Route index element={<OfficerDashboard />} />
+            <Route path="analytics" element={<OfficerAnalytics />} />
+            <Route path="submissions" element={<OfficerSubmissions />} />
+            <Route path="projects" element={<OfficerProjects />} />
+            <Route path="map" element={<OfficerMap />} />
+            <Route path="ai-insights" element={<OfficerAIInsights />} />
+            <Route path="accounts" element={<AccountManagement />} />
             <Route path="profile" element={<CitizenProfile />} />
             <Route path="notifications" element={<CitizenNotifications />} />
           </Route>
         </Route>
 
-        {/* Admin Routes */}
+
         <Route path="/admin" element={<RoleRoute allowedRoles={['admin']} />}>
           <Route element={<DashboardLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="accounts" element={<AccountManagement />} />
             <Route path="projects" element={<AdminProjects />} />
             <Route path="moderation" element={<AdminModeration />} />
             <Route path="reports" element={<AdminReports />} />
             <Route path="datasets" element={<AdminDatasets />} />
+            <Route path="profile" element={<CitizenProfile />} />
+          </Route>
+        </Route>
+
+        {/* Department Routes */}
+        <Route path="/department" element={<RoleRoute allowedRoles={['department', 'admin']} />}>
+          <Route element={<DashboardLayout />}>
+            <Route index element={<DepartmentDashboard />} />
+            <Route path="accounts" element={<AccountManagement />} />
+            <Route path="submissions" element={<OfficerSubmissions />} />
+            <Route path="projects" element={<OfficerProjects />} />
+            <Route path="analytics" element={<OfficerAnalytics />} />
+            <Route path="profile" element={<CitizenProfile />} />
+          </Route>
+        </Route>
+
+        {/* NGO Routes */}
+        <Route path="/ngo" element={<RoleRoute allowedRoles={['ngo', 'admin']} />}>
+          <Route element={<DashboardLayout />}>
+            <Route index element={<NGODashboard />} />
+            <Route path="submissions" element={<OfficerSubmissions />} />
             <Route path="profile" element={<CitizenProfile />} />
           </Route>
         </Route>

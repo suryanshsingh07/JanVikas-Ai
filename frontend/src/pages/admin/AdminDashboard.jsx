@@ -49,8 +49,8 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Total Users" 
-          value={(stats?.users?.citizens || 0) + (stats?.users?.officials || 0)} 
-          subValue={`${stats?.users?.officials || 0} Officials registered`}
+          value={stats?.users?.total || 0} 
+          subValue={`${stats?.users?.officers || 0} Officers registered`}
           icon={<Users className="text-blue-500" />} 
         />
         <StatCard 

@@ -2,13 +2,17 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Zap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import BackButton from '../../components/common/BackButton';
 
 const DEMO_CREDENTIALS = [
-  { role: 'Citizen', email: 'citizen@test.com', password: 'Password123', color: 'bg-success/10 text-success border-success/20 hover:bg-success/20' },
-  { role: 'Official', email: 'official@test.com', password: 'Password123', color: 'bg-primary-500/10 text-primary-600 border-primary-500/20 hover:bg-primary-500/20' },
-  { role: 'Admin', email: 'admin@test.com', password: 'Password123', color: 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/20' },
+  { role: 'Citizen', email: 'citizen@janvikas.ai', password: 'password123', color: 'bg-success/10 text-success border-success/20 hover:bg-success/20' },
+  { role: 'Officer', email: 'officer@janvikas.ai', password: 'password123', color: 'bg-primary-500/10 text-primary-600 border-primary-500/20 hover:bg-primary-500/20' },
+  { role: 'Department', email: 'dept@janvikas.ai', password: 'password123', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20' },
+  { role: 'NGO', email: 'ngo@janvikas.ai', password: 'password123', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20' },
+  { role: 'Admin', email: 'admin@janvikas.ai', password: 'password123', color: 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/20' },
 ];
 
 const Login = () => {
@@ -16,6 +20,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeDemo, setActiveDemo] = useState(null);
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,11 +37,13 @@ const Login = () => {
     setIsSubmitting(true);
     const result = await login(data.email, data.password);
     setIsSubmitting(false);
-    
+
     if (result.success) {
       if (from === '/') {
         if (result.role === 'admin') navigate('/admin');
-        else if (result.role === 'official') navigate('/official');
+        else if (result.role === 'officer') navigate('/officer');
+        else if (result.role === 'department') navigate('/department');
+        else if (result.role === 'ngo') navigate('/ngo');
         else navigate('/citizen');
       } else {
         navigate(from, { replace: true });
@@ -46,10 +53,11 @@ const Login = () => {
 
   return (
     <div>
+      <BackButton className="mb-6" />
       <div className="mb-8">
-        <h2 className="text-3xl font-display font-bold mb-2">Welcome Back</h2>
+        <h2 className="text-3xl font-display font-bold mb-2">{t('login.title')}</h2>
         <p className="text-gray-500 dark:text-gray-400">
-          Sign in to access your JanVikas AI dashboard.
+          {t('login.subtitle')}
         </p>
       </div>
 
@@ -57,7 +65,7 @@ const Login = () => {
       <div className="mb-6 p-4 rounded-xl border border-border bg-surface">
         <div className="flex items-center gap-2 mb-3">
           <Zap size={14} className="text-warning" />
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Quick Demo Login</span>
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('login.demoTitle')}</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {DEMO_CREDENTIALS.map((cred) => (
@@ -73,14 +81,14 @@ const Login = () => {
         </div>
         {activeDemo && (
           <p className="mt-2 text-xs text-gray-400 text-center">
-            ✓ {activeDemo} credentials filled — click Sign In
+            ✓ {activeDemo} {t('login.demoFilled')}
           </p>
         )}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium mb-1.5" htmlFor="email">Email Address</label>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="email">{t('login.emailLabel')}</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
               <Mail size={18} />
@@ -89,10 +97,10 @@ const Login = () => {
               id="email"
               type="email"
               className={`w-full pl-10 pr-4 py-2.5 bg-background border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.email ? 'border-danger' : 'border-border'}`}
-              placeholder="you@example.com"
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email address' }
+              placeholder={t('login.emailPlaceholder')}
+              {...register('email', {
+                required: t('login.validation.emailRequired'),
+                pattern: { value: /\S+@\S+\.\S+/, message: t('login.validation.invalidEmail') }
               })}
             />
           </div>
@@ -101,9 +109,9 @@ const Login = () => {
 
         <div>
           <div className="flex justify-between items-center mb-1.5">
-            <label className="block text-sm font-medium" htmlFor="password">Password</label>
+            <label className="block text-sm font-medium" htmlFor="password">{t('login.passwordLabel')}</label>
             <Link to="/forgot-password" className="text-xs text-primary-500 hover:text-primary-600 font-medium">
-              Forgot password?
+              {t('login.forgotPassword')}
             </Link>
           </div>
           <div className="relative">
@@ -114,8 +122,8 @@ const Login = () => {
               id="password"
               type={showPassword ? 'text' : 'password'}
               className={`w-full pl-10 pr-10 py-2.5 bg-background border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${errors.password ? 'border-danger' : 'border-border'}`}
-              placeholder="••••••••"
-              {...register('password', { required: 'Password is required' })}
+              placeholder={t('login.passwordPlaceholder')}
+              {...register('password', { required: t('login.validation.passwordRequired') })}
             />
             <button
               type="button"
@@ -137,7 +145,7 @@ const Login = () => {
             <LoadingSpinner size="sm" />
           ) : (
             <>
-              Sign In
+              {t('login.signInButton')}
               <ArrowRight size={18} />
             </>
           )}
@@ -145,9 +153,9 @@ const Login = () => {
       </form>
 
       <div className="mt-8 text-center text-sm text-gray-500">
-        Don't have an account?{' '}
+        {t('login.noAccount')}{' '}
         <Link to="/register" className="text-primary-500 hover:text-primary-600 font-medium">
-          Create an account
+          {t('login.createAccount')}
         </Link>
       </div>
     </div>

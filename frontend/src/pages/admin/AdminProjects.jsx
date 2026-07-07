@@ -5,6 +5,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { PROJECT_STATUSES } from '../../constants';
 import toast from 'react-hot-toast';
 import { formatDate } from '../../utils/formatters';
+import BackButton from '../../components/common/BackButton';
 
 const AdminProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -34,6 +35,7 @@ const AdminProjects = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-display font-bold">National Project Oversight</h1>

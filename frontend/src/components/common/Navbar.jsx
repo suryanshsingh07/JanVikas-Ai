@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Bell, User, LogOut, Settings, ArrowLeft } from 'lucide-react';
+import { Menu, Bell, User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useContext, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,14 +11,14 @@ import { truncateText, formatRelativeTime } from '../../utils/formatters';
 
 const Navbar = ({ toggleSidebar, isPublic = false }) => {
   const { user, logout } = useAuth();
-  const { unreadCount, notifications, markAsRead } = useContext(NotificationContext) || { unreadCount: 0, notifications: [], markAsRead: () => {} };
+  const { unreadCount, notifications, markAsRead } = useContext(NotificationContext) || { unreadCount: 0, notifications: [], markAsRead: () => { } };
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  
+
   const notifRef = useRef(null);
   const profileRef = useRef(null);
 
@@ -44,7 +44,9 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
   const getRoleRoute = () => {
     if (!user) return '/';
     if (user.role === 'admin') return '/admin';
-    if (user.role === 'official') return '/official';
+    if (user.role === 'officer') return '/officer';
+    if (user.role === 'department') return '/department';
+    if (user.role === 'ngo') return '/ngo';
     return '/citizen';
   };
 
@@ -53,7 +55,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
       markAsRead([notif._id]);
     }
     setShowNotifications(false);
-    
+
     // Route based on notification type
     if (notif.type.includes('submission') && notif.data?.submissionId) {
       if (user.role === 'citizen') {
@@ -69,29 +71,18 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
   return (
     <header className="sticky top-0 z-30 w-full bg-surface/80 backdrop-blur-md border-b border-border h-16 flex items-center px-4 md:px-6">
       <div className="flex items-center justify-between w-full">
-        
+
         {/* Left Side: Back Button, Logo & Menu Toggle */}
         <div className="flex items-center gap-4">
-          {/* Global Back Button (hidden on landing page) */}
-          {location.pathname !== '/' && (
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 rounded-md hover:bg-surfaceHover text-foreground transition-colors border border-border bg-surface"
-              title="Go Back"
-            >
-              <ArrowLeft size={18} />
-            </button>
-          )}
-
           {!isPublic && toggleSidebar && (
-            <button 
+            <button
               onClick={toggleSidebar}
               className="lg:hidden p-2 rounded-md hover:bg-surfaceHover text-foreground"
             >
               <Menu size={20} />
             </button>
           )}
-          
+
           <Link to={getRoleRoute()} className="flex items-center gap-2 group">
             <img src="/favicon.ico" className="w-8 h-8 object-contain transition-transform group-hover:scale-105" />
             <span className="font-display font-bold text-xl hidden sm:block tracking-tight text-foreground">
@@ -118,7 +109,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
             <>
               {/* Notifications Dropdown */}
               <div className="relative" ref={notifRef}>
-                <button 
+                <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="relative p-2 rounded-full hover:bg-surfaceHover transition-colors"
                 >
@@ -145,7 +136,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
                           </span>
                         )}
                       </div>
-                      
+
                       <div className="max-h-80 overflow-y-auto no-scrollbar">
                         {notifications.length === 0 ? (
                           <div className="p-4 text-center text-sm text-gray-500">
@@ -153,7 +144,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
                           </div>
                         ) : (
                           notifications.slice(0, 5).map(notif => (
-                            <div 
+                            <div
                               key={notif._id}
                               onClick={() => handleNotificationClick(notif)}
                               className={`p-3 border-b border-border last:border-0 cursor-pointer hover:bg-surfaceHover transition-colors ${!notif.isRead ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}`}
@@ -170,8 +161,8 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
                           ))
                         )}
                       </div>
-                      
-                      <Link 
+
+                      <Link
                         to={`/${user.role}/notifications`}
                         onClick={() => setShowNotifications(false)}
                         className="block w-full text-center text-xs font-medium text-primary-500 hover:text-primary-600 p-3 border-t border-border bg-surfaceHover/50"
@@ -185,7 +176,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
 
               {/* Profile Dropdown */}
               <div className="relative" ref={profileRef}>
-                <button 
+                <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
                   className="flex items-center gap-2 p-1 rounded-full hover:bg-surfaceHover transition-colors"
                 >
@@ -216,9 +207,9 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="py-1">
-                        <Link 
+                        <Link
                           to={`/${user.role}/profile`}
                           onClick={() => setShowProfileMenu(false)}
                           className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-surfaceHover transition-colors"
@@ -226,7 +217,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
                           <Settings size={16} />
                           {t('navbar.accountSettings')}
                         </Link>
-                        <button 
+                        <button
                           onClick={handleLogout}
                           className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
                         >

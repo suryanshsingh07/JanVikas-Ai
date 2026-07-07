@@ -4,9 +4,11 @@
 
 const Submission = require('../models/Submission');
 const Vote = require('../models/Vote');
+const Comment = require('../models/Comment'); // Required for population
+const Project = require('../models/Project'); // Required for population
 const { createError, asyncHandler, getPagination } = require('../utils/helpers');
 const { analyzeSubmission } = require('../services/aiService');
-const { uploadImages, uploadVoice } = require('../services/firebaseService');
+const { uploadImages, uploadVideos, uploadVoice } = require('../services/firebaseService');
 const { notifyStatusChange } = require('../services/notificationService');
 
 /**
@@ -22,10 +24,14 @@ const createSubmission = asyncHandler(async (req, res) => {
 
   // ─── Upload media files ───────────────────────────────
   let imageUrls = [];
+  let videoUrls = [];
   let voiceUrl = null;
 
   if (req.files?.images) {
     imageUrls = await uploadImages(req.files.images);
+  }
+  if (req.files?.videos) {
+    videoUrls = await uploadVideos(req.files.videos);
   }
   if (req.files?.voice && req.files.voice[0]) {
     voiceUrl = await uploadVoice(req.files.voice[0]);
@@ -50,6 +56,7 @@ const createSubmission = asyncHandler(async (req, res) => {
     location: parsedLocation,
     media: {
       images: imageUrls,
+      videos: videoUrls,
       voiceRecording: voiceUrl,
       voiceTranscript: req.body.voiceTranscript || '',
     },
@@ -103,8 +110,11 @@ const getSubmissions = asyncHandler(async (req, res) => {
   if (isDuplicate !== undefined) filter['aiAnalysis.isDuplicate'] = isDuplicate === 'true';
 
   // ─── Role-based filtering ─────────────────────────────
-  if (req.user.role === 'citizen') {
-    filter.citizen = req.user._id; // Citizens only see their own
+  // Submissions are fully public to all logged-in roles to enable community voting 
+  // and collaborative resolution (NGOs, Officers, Departments).
+  // Pass ?mine=true to scope submissions to the current user only (for citizen dashboard).
+  if (req.query.mine === 'true') {
+    filter.citizen = req.user._id;
   }
 
   // ─── Text search ──────────────────────────────────────
