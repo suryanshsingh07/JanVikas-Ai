@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "notifications": "सूचना",
+    "viewAllNotifications": "सर्व सूचना पहा",
+    "accountSettings": "खाते सेटिंग्ज",
+    "logout": "लॉग आउट"
+  },
+  "sidebar": {
+    "dashboard": "डॅशबोर्ड",
+    "mySubmissions": "माझ्या तक्रारी",
+    "reportIssue": "समस्या नोंदवा",
+    "aiInsights": "AI विश्लेषण",
+    "manageProjects": "प्रकल्प व्यवस्थापित करा",
+    "userManagement": "वापरकर्ता व्यवस्थापन",
+    "systemReports": "सिस्टम अहवाल",
+    "citizenPortal": "नागरिक पोर्टल",
+    "officialPortal": "अधिकारी पोर्टल",
+    "adminPortal": "प्रशासक पोर्टल"
+  },
+  "landing": {
+    "title1": "लोकशाहीचे सशक्तीकरण",
+    "title2": "तंत्रज्ञानाद्वारे",
+    "subtitle": "प्रगत कृत्रिम बुद्धिमत्ता वापरून नागरिक आणि त्यांच्या निवडून आलेल्या प्रतिनिधींमधील अंतर कमी करणाऱ्या मंचात सामील व्हा.",
+    "getStarted": "सुरुवात करा",
+    "learnMore": "अधिक जाणून घ्या"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "لاگ اِن",
+    "signup": "سائن اَپ",
+    "notifications": "اِطلاعات",
+    "viewAllNotifications": "سب اِطلاعات وُچھو",
+    "accountSettings": "اَکاؤنٹ سیٹنگ",
+    "logout": "لاگ اَوٗٹ"
+  },
+  "sidebar": {
+    "dashboard": "ڈیشبورڈ",
+    "mySubmissions": "میٚہ دعویٰ",
+    "reportIssue": "مسٔلہ درج کرٕو",
+    "aiInsights": "AI تجزیہ",
+    "manageProjects": "پرویجیکٹ سانبٕھو",
+    "userManagement": "یوزَر منیجمینٹ",
+    "systemReports": "سِسٹَم رِپورٹ",
+    "citizenPortal": "شہری پورٹل",
+    "officialPortal": "اَفسَر پورٹل",
+    "adminPortal": "ایڈمِن پورٹل"
+  },
+  "landing": {
+    "title1": "جَمہوریَت سشکتِکرَن",
+    "title2": "تیکنالوجی زریعَہ",
+    "subtitle": "اَعلیٰ مَصنوعی ذہانَت استِعمال کَر شہریوں و اُن کے چُنِدَہ نُمایندوں کے بیچ کھائی پُر کَرنِ والے پلیٹفارم سے جُڑو۔",
+    "getStarted": "شروع کرو",
+    "learnMore": "زیادہ جانو"
+  }
+}

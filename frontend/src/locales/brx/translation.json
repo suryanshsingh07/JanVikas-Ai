@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "notifications": "खबर",
+    "viewAllNotifications": "सकल खबर नागिरसोन",
+    "accountSettings": "एकाउन्ट सेटिंग",
+    "logout": "लॉग आउट"
+  },
+  "sidebar": {
+    "dashboard": "डेसबोर्ड",
+    "mySubmissions": "मोन जाहोनाय",
+    "reportIssue": "साफा लिखिर",
+    "aiInsights": "AI विज्ञान",
+    "manageProjects": "प्रोजेक्ट सांख्यागिरि",
+    "userManagement": "रावलोब सांख्यागिरि",
+    "systemReports": "सिस्टम रिपोर्ट",
+    "citizenPortal": "नागरिक पोर्टल",
+    "officialPortal": "अफिसार पोर्टल",
+    "adminPortal": "एडमिन पोर्टल"
+  },
+  "landing": {
+    "title1": "लोकतन्त्र सोमोसाय",
+    "title2": "तकनीक बिजिरनाय",
+    "subtitle": "AI थाखो नागरिक आरो निजोर निर्बाचित प्रतिनिधि मिजिं खौ फोलायनाय पोर्टल जोबोरनो गावखौ फेरहानो थांख।",
+    "getStarted": "गोलाव कर",
+    "learnMore": "आरो बुजिर"
+  }
+}

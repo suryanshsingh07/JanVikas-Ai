@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "ଲଗ ଇନ",
+    "signup": "ସାଇନ ଅପ",
+    "notifications": "ବିଜ୍ଞପ୍ତି",
+    "viewAllNotifications": "ସମସ୍ତ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ",
+    "accountSettings": "ଆକାଉଣ୍ଟ ସେଟିଂସ",
+    "logout": "ଲଗ ଆଉଟ"
+  },
+  "sidebar": {
+    "dashboard": "ଡ୍ୟାସବୋର୍ଡ",
+    "mySubmissions": "ମୋ ଅଭିଯୋଗ",
+    "reportIssue": "ସମସ୍ୟା ଜଣାନ୍ତୁ",
+    "aiInsights": "AI ବିଶ୍ଳେଷଣ",
+    "manageProjects": "ପ୍ରକଳ୍ପ ପରିଚାଳନା",
+    "userManagement": "ଉପଯୋଗକର୍ତ୍ତା ପ୍ରବନ୍ଧନ",
+    "systemReports": "ସିଷ୍ଟେମ ରିପୋର୍ଟ",
+    "citizenPortal": "ନାଗରିକ ପୋର୍ଟାଲ",
+    "officialPortal": "ଅଧିକାରୀ ପୋର୍ଟାଲ",
+    "adminPortal": "ପ୍ରଶାସକ ପୋର୍ଟାଲ"
+  },
+  "landing": {
+    "title1": "ଗଣତନ୍ତ୍ରର ସଶକ୍ତୀକରଣ",
+    "title2": "ପ୍ରଯୁକ୍ତି ମାଧ୍ୟମରେ",
+    "subtitle": "ଉନ୍ନତ କୃତ୍ରିମ ବୁଦ୍ଧିମତ୍ତା ବ୍ୟବହାର କରି ନାଗରିକ ଓ ତାଙ୍କ ନିର୍ବାଚିତ ପ୍ରତିନିଧିଙ୍କ ମଧ୍ୟରେ ଅନ୍ତର ଦୂର କରିବାରେ ସାହାଯ୍ୟ କରୁଥିବା ପ୍ଲାଟଫର୍ମ ସହ ଯୋଗ ଦିଅନ୍ତୁ।",
+    "getStarted": "ଆରମ୍ଭ କରନ୍ତୁ",
+    "learnMore": "ଅଧିକ ଜାଣନ୍ତୁ"
+  }
+}

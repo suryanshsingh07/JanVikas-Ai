@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "notifications": "Notifications",
+    "viewAllNotifications": "View All Notifications",
+    "accountSettings": "Account Settings",
+    "logout": "Log out"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "mySubmissions": "My Submissions",
+    "reportIssue": "Report Issue",
+    "aiInsights": "AI Insights",
+    "manageProjects": "Manage Projects",
+    "userManagement": "User Management",
+    "systemReports": "System Reports",
+    "citizenPortal": "Citizen Portal",
+    "officialPortal": "Official Portal",
+    "adminPortal": "Admin Portal"
+  },
+  "landing": {
+    "title1": "Empowering Democracy",
+    "title2": "Through Technology",
+    "subtitle": "Join the platform that bridges the gap between citizens and their elected representatives using advanced Artificial Intelligence.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "لاگ ان",
+    "signup": "سائن اپ",
+    "notifications": "اطلاع",
+    "viewAllNotifications": "سڀ اطلاع ڏسو",
+    "accountSettings": "اڪائونٽ سيٽنگ",
+    "logout": "لاگ آئوٽ"
+  },
+  "sidebar": {
+    "dashboard": "ڊيشبورڊ",
+    "mySubmissions": "منهنجون شڪايتون",
+    "reportIssue": "مسئلو درج ڪريو",
+    "aiInsights": "AI تجزيو",
+    "manageProjects": "منصوبا منظم ڪريو",
+    "userManagement": "يوزر مينيجمينٽ",
+    "systemReports": "سسٽم رپورٽون",
+    "citizenPortal": "شهري پورٽل",
+    "officialPortal": "آفيسر پورٽل",
+    "adminPortal": "ايڊمن پورٽل"
+  },
+  "landing": {
+    "title1": "جمهوريت کي مضبوط ڪرڻ",
+    "title2": "ٽيڪنالاجي ذريعي",
+    "subtitle": "ترقي يافته مصنوعي ذهانت استعمال ڪري شهرين ۽ انهن جي چونڊيل نمائندن جي وچ ۾ خلا ڀرڻ وارو پليٽفارم ۾ شامل ٿيو۔",
+    "getStarted": "شروع ڪريو",
+    "learnMore": "وڌيڪ ڄاڻو"
+  }
+}

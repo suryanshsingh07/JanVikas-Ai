@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "લૉગ ઇન",
+    "signup": "સાઇન અપ",
+    "notifications": "સૂચનાઓ",
+    "viewAllNotifications": "બધી સૂચનાઓ જુઓ",
+    "accountSettings": "ખાતા સેટિંગ્સ",
+    "logout": "લૉગ આઉટ"
+  },
+  "sidebar": {
+    "dashboard": "ડૅશબોર્ડ",
+    "mySubmissions": "મારી ફરિયાદો",
+    "reportIssue": "સમસ્યા નોંધો",
+    "aiInsights": "AI વિશ્લેષણ",
+    "manageProjects": "પ્રોજેક્ટ સંચાલિત કરો",
+    "userManagement": "વપરાશકર્તા વ્યવસ્થાપન",
+    "systemReports": "સિસ્ટમ અહેવાલ",
+    "citizenPortal": "નાગરિક પોર્ટલ",
+    "officialPortal": "અધિકારી પોર્ટલ",
+    "adminPortal": "વ્યવસ્થાપક પોર્ટલ"
+  },
+  "landing": {
+    "title1": "લોકશાહીનું સશક્તિકરણ",
+    "title2": "ટેક્નોલૉજી દ્વારા",
+    "subtitle": "AI ટેક્નોલૉજીનો ઉપયોગ કરીને નાગરિકો અને તેમના ચૂંટાયેલા પ્રતિનિધિઓ વચ્ચેના અંતરને દૂર કરવામાં મદદ કરતા પ્લેટફૉર્મ સાથે જોડાઓ.",
+    "getStarted": "શરૂ કરો",
+    "learnMore": "વધુ જાણો"
+  }
+}

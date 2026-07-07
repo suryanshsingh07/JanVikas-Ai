@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "لاگ ان",
+    "signup": "سائن اپ",
+    "notifications": "اطلاعات",
+    "viewAllNotifications": "تمام اطلاعات دیکھیں",
+    "accountSettings": "اکاؤنٹ ترتیبات",
+    "logout": "لاگ آؤٹ"
+  },
+  "sidebar": {
+    "dashboard": "ڈیش بورڈ",
+    "mySubmissions": "میری شکایات",
+    "reportIssue": "مسئلہ درج کریں",
+    "aiInsights": "AI تجزیہ",
+    "manageProjects": "منصوبے منظم کریں",
+    "userManagement": "صارف انتظامیہ",
+    "systemReports": "سسٹم رپورٹس",
+    "citizenPortal": "شہری پورٹل",
+    "officialPortal": "افسر پورٹل",
+    "adminPortal": "منتظم پورٹل"
+  },
+  "landing": {
+    "title1": "جمہوریت کو طاقتور بنانا",
+    "title2": "ٹیکنالوجی کے ذریعے",
+    "subtitle": "جدید مصنوعی ذہانت کا استعمال کرتے ہوئے شہریوں اور ان کے منتخب نمائندوں کے درمیان فاصلے کو پاٹنے والے پلیٹ فارم سے جڑیں۔",
+    "getStarted": "شروع کریں",
+    "learnMore": "مزید جانیں"
+  }
+}

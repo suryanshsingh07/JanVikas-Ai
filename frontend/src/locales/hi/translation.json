@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "notifications": "सूचनाएं",
+    "viewAllNotifications": "सभी सूचनाएं देखें",
+    "accountSettings": "खाता सेटिंग",
+    "logout": "लॉग आउट"
+  },
+  "sidebar": {
+    "dashboard": "डैशबोर्ड",
+    "mySubmissions": "मेरी शिकायतें",
+    "reportIssue": "समस्या दर्ज करें",
+    "aiInsights": "AI विश्लेषण",
+    "manageProjects": "प्रोजेक्ट प्रबंधित करें",
+    "userManagement": "उपयोगकर्ता प्रबंधन",
+    "systemReports": "सिस्टम रिपोर्ट",
+    "citizenPortal": "नागरिक पोर्टल",
+    "officialPortal": "अधिकारी पोर्टल",
+    "adminPortal": "व्यवस्थापक पोर्टल"
+  },
+  "landing": {
+    "title1": "लोकतंत्र का सशक्तिकरण",
+    "title2": "तकनीक के माध्यम से",
+    "subtitle": "उस मंच से जुड़ें जो उन्नत कृत्रिम बुद्धिमत्ता (AI) का उपयोग करके नागरिकों और उनके चुने हुए प्रतिनिधियों के बीच की खाई को पाटता है।",
+    "getStarted": "शुरू करें",
+    "learnMore": "और जानें"
+  }
+}

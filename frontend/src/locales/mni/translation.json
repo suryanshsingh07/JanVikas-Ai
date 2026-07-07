@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "লগ ইন",
+    "signup": "সাইন অপ",
+    "notifications": "খবর",
+    "viewAllNotifications": "মখোয় খবর থম্বিরক",
+    "accountSettings": "একাউন্ট সেটিং",
+    "logout": "লগ অউট"
+  },
+  "sidebar": {
+    "dashboard": "ডেসবোর্ড",
+    "mySubmissions": "ঐগি অভিযোগশিং",
+    "reportIssue": "খোঙথাং পীরিবা",
+    "aiInsights": "AI বিশ্লেষণ",
+    "manageProjects": "প্রজেক্টশিং লৈঙাক্লিবা",
+    "userManagement": "ইউজর ম্যানেজমেন্ট",
+    "systemReports": "সিস্টেম রিপোর্ট",
+    "citizenPortal": "মীয়াম পোর্টল",
+    "officialPortal": "অফিশল পোর্টল",
+    "adminPortal": "অ্যাডমিন পোর্টল"
+  },
+  "landing": {
+    "title1": "ডেমোক্রেসী শক্তিশালী তৌবা",
+    "title2": "তেকনোলোজী চৎনরিবা",
+    "subtitle": "অ্যাডভান্সড AI ব্যবহার তৌনা মীয়ামশিং অমসুং মখোয়গি ভোট দিনবা মায়কৈ পীবশিং মরীমদা মমলশিং পুথোকপা প্লেটফর্মদা থমগৎলু।",
+    "getStarted": "শুরু তৌ",
+    "learnMore": "ফাওবা তেংনবিয়ু"
+  }
+}

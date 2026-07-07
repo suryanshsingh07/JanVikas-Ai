@@ -1,0 +1,121 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
+import RoleRoute from './RoleRoute';
+import { useAuth } from '../hooks/useAuth';
+
+// Layouts
+import MainLayout from '../layouts/MainLayout';
+import AuthLayout from '../layouts/AuthLayout';
+import DashboardLayout from '../layouts/DashboardLayout';
+
+// Public Pages
+import Landing from '../pages/Landing';
+import About from '../pages/About';
+import TermsOfService from '../pages/TermsOfService';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import ForgotPassword from '../pages/auth/ForgotPassword';
+
+// Citizen Pages
+import CitizenDashboard from '../pages/citizen/CitizenDashboard';
+import SubmitIssue from '../pages/citizen/SubmitIssue';
+import MySubmissions from '../pages/citizen/MySubmissions';
+import TrackSubmission from '../pages/citizen/TrackSubmission';
+import CitizenProfile from '../pages/citizen/Profile';
+import CitizenNotifications from '../pages/citizen/Notifications';
+
+// Official Pages
+import OfficialDashboard from '../pages/official/OfficialDashboard';
+import OfficialAnalytics from '../pages/official/OfficialAnalytics';
+import OfficialProjects from '../pages/official/OfficialProjects';
+import OfficialMap from '../pages/official/OfficialMap';
+import OfficialAIInsights from '../pages/official/OfficialAIInsights';
+import OfficialSubmissions from '../pages/official/OfficialSubmissions';
+
+// Admin Pages
+import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminUsers from '../pages/admin/AdminUsers';
+import AdminProjects from '../pages/admin/AdminProjects';
+import AdminModeration from '../pages/admin/AdminModeration';
+import AdminReports from '../pages/admin/AdminReports';
+import AdminDatasets from '../pages/admin/AdminDatasets';
+
+const AppRoutes = () => {
+  const { user } = useAuth();
+
+  // Root redirect based on role
+  const getRootRedirect = () => {
+    if (!user) return '/';
+    if (user.role === 'admin') return '/admin';
+    if (user.role === 'official') return '/official';
+    return '/citizen';
+  };
+
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route element={<MainLayout />}>
+        <Route path="/" element={user ? <Navigate to={getRootRedirect()} replace /> : <Landing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+      </Route>
+
+      {/* Auth Routes */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={user ? <Navigate to={getRootRedirect()} replace /> : <Login />} />
+        <Route path="/register" element={user ? <Navigate to={getRootRedirect()} replace /> : <Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </Route>
+
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+        
+        {/* Citizen Routes */}
+        <Route path="/citizen" element={<RoleRoute allowedRoles={['citizen']} />}>
+          <Route element={<DashboardLayout />}>
+            <Route index element={<CitizenDashboard />} />
+            <Route path="submit" element={<SubmitIssue />} />
+            <Route path="submissions" element={<MySubmissions />} />
+            <Route path="track/:id" element={<TrackSubmission />} />
+            <Route path="profile" element={<CitizenProfile />} />
+            <Route path="notifications" element={<CitizenNotifications />} />
+          </Route>
+        </Route>
+
+        {/* Official Routes */}
+        <Route path="/official" element={<RoleRoute allowedRoles={['official', 'admin']} />}>
+          <Route element={<DashboardLayout />}>
+            <Route index element={<OfficialDashboard />} />
+            <Route path="analytics" element={<OfficialAnalytics />} />
+            <Route path="submissions" element={<OfficialSubmissions />} />
+            <Route path="projects" element={<OfficialProjects />} />
+            <Route path="map" element={<OfficialMap />} />
+            <Route path="ai-insights" element={<OfficialAIInsights />} />
+            <Route path="profile" element={<CitizenProfile />} />
+            <Route path="notifications" element={<CitizenNotifications />} />
+          </Route>
+        </Route>
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<RoleRoute allowedRoles={['admin']} />}>
+          <Route element={<DashboardLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="moderation" element={<AdminModeration />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="datasets" element={<AdminDatasets />} />
+            <Route path="profile" element={<CitizenProfile />} />
+          </Route>
+        </Route>
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+export default AppRoutes;

@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "प्रविश",
+    "signup": "नामांकन",
+    "notifications": "सूचनाः",
+    "viewAllNotifications": "सर्वाः सूचनाः पश्यतु",
+    "accountSettings": "खाता-विन्यासः",
+    "logout": "निर्गम्यतु"
+  },
+  "sidebar": {
+    "dashboard": "नियंत्रण-पटलम्",
+    "mySubmissions": "मम निवेदनानि",
+    "reportIssue": "समस्यां सूचयतु",
+    "aiInsights": "AI विश्लेषणम्",
+    "manageProjects": "परियोजनाः प्रबन्धतु",
+    "userManagement": "उपयोक्तृ-प्रबन्धनम्",
+    "systemReports": "प्रणाली-प्रतिवेदनम्",
+    "citizenPortal": "नागरिक-द्वारम्",
+    "officialPortal": "अधिकारि-द्वारम्",
+    "adminPortal": "प्रशासक-द्वारम्"
+  },
+  "landing": {
+    "title1": "लोकतन्त्रस्य सशक्तीकरणम्",
+    "title2": "प्रौद्योगिक्याः माध्यमेन",
+    "subtitle": "उन्नत कृत्रिम-बुद्धेः सहाय्येन नागरिकाणां तेषां च निर्वाचित-प्रतिनिधीनां मध्ये अन्तरं पूरयितुं सहायकं मञ्चम् अनुगच्छतु।",
+    "getStarted": "आरम्भतु",
+    "learnMore": "अधिकं जानातु"
+  }
+}

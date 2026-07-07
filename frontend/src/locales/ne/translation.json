@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "लग इन",
+    "signup": "साइन अप",
+    "notifications": "सूचनाहरू",
+    "viewAllNotifications": "सबै सूचनाहरू हेर्नुहोस्",
+    "accountSettings": "खाता सेटिङ",
+    "logout": "लग आउट"
+  },
+  "sidebar": {
+    "dashboard": "ड्यासबोर्ड",
+    "mySubmissions": "मेरा उजुरीहरू",
+    "reportIssue": "समस्या दर्ता गर्नुहोस्",
+    "aiInsights": "AI विश्लेषण",
+    "manageProjects": "परियोजनाहरू व्यवस्थापन",
+    "userManagement": "प्रयोगकर्ता व्यवस्थापन",
+    "systemReports": "प्रणाली रिपोर्ट",
+    "citizenPortal": "नागरिक पोर्टल",
+    "officialPortal": "अधिकारी पोर्टल",
+    "adminPortal": "प्रशासक पोर्टल"
+  },
+  "landing": {
+    "title1": "लोकतन्त्रको सशक्तीकरण",
+    "title2": "प्रविधि मार्फत",
+    "subtitle": "उन्नत कृत्रिम बुद्धिमत्ता प्रयोग गरी नागरिक र तिनीहरूका निर्वाचित प्रतिनिधिहरूबीचको खाडल पुर्ने प्लेटफर्ममा सामेल हुनुहोस्।",
+    "getStarted": "सुरु गर्नुहोस्",
+    "learnMore": "थप जान्नुहोस्"
+  }
+}

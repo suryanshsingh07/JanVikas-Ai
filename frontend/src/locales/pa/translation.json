@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "ਲਾਗ ਇਨ",
+    "signup": "ਸਾਈਨ ਅੱਪ",
+    "notifications": "ਸੂਚਨਾਵਾਂ",
+    "viewAllNotifications": "ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਦੇਖੋ",
+    "accountSettings": "ਖਾਤਾ ਸੈਟਿੰਗਾਂ",
+    "logout": "ਲਾਗ ਆਉਟ"
+  },
+  "sidebar": {
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+    "mySubmissions": "ਮੇਰੀਆਂ ਸ਼ਿਕਾਇਤਾਂ",
+    "reportIssue": "ਸਮੱਸਿਆ ਦਰਜ਼ ਕਰੋ",
+    "aiInsights": "AI ਵਿਸ਼ਲੇਸ਼ਣ",
+    "manageProjects": "ਪ੍ਰੋਜੈਕਟ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "userManagement": "ਉਪਭੋਗਤਾ ਪ੍ਰਬੰਧਨ",
+    "systemReports": "ਸਿਸਟਮ ਰਿਪੋਰਟਾਂ",
+    "citizenPortal": "ਨਾਗਰਿਕ ਪੋਰਟਲ",
+    "officialPortal": "ਅਧਿਕਾਰੀ ਪੋਰਟਲ",
+    "adminPortal": "ਪ੍ਰਸ਼ਾਸਕ ਪੋਰਟਲ"
+  },
+  "landing": {
+    "title1": "ਲੋਕਤੰਤਰ ਦਾ ਸਸ਼ਕਤੀਕਰਨ",
+    "title2": "ਤਕਨਾਲੋਜੀ ਰਾਹੀਂ",
+    "subtitle": "ਉੱਨਤ ਨਕਲੀ ਬੁੱਧੀ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਨਾਗਰਿਕਾਂ ਅਤੇ ਉਹਨਾਂ ਦੇ ਚੁਣੇ ਹੋਏ ਨੁਮਾਇੰਦਿਆਂ ਵਿਚਕਾਰ ਪਾੜੇ ਨੂੰ ਪੂਰਾ ਕਰਨ ਵਾਲੇ ਪਲੇਟਫਾਰਮ ਨਾਲ ਜੁੜੋ।",
+    "getStarted": "ਸ਼ੁਰੂ ਕਰੋ",
+    "learnMore": "ਹੋਰ ਜਾਣੋ"
+  }
+}

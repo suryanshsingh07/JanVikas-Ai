@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "notifications": "सूचना",
+    "viewAllNotifications": "सगळ्यो सूचना पळय",
+    "accountSettings": "खाते सेटिंग",
+    "logout": "लॉग आउट"
+  },
+  "sidebar": {
+    "dashboard": "डॅशबोर्ड",
+    "mySubmissions": "माझ्यो तक्रारी",
+    "reportIssue": "समस्या नोंद करात",
+    "aiInsights": "AI विश्लेषण",
+    "manageProjects": "प्रकल्प सांबाळात",
+    "userManagement": "वापरकर्तो व्यवस्थापन",
+    "systemReports": "सिस्टम रिपोर्ट",
+    "citizenPortal": "नागरिक पोर्टल",
+    "officialPortal": "सरकारी अधिकारी पोर्टल",
+    "adminPortal": "प्रशासक पोर्टल"
+  },
+  "landing": {
+    "title1": "लोकशाहीचें सशक्तीकरण",
+    "title2": "तंत्रज्ञानाद्वारें",
+    "subtitle": "प्रगत कृत्रिम बुद्धिमत्ता वापरून नागरिक आनी तांच्या निवडून आयिल्ल्या प्रतिनिधींमदलो अंतर उणें करपाच्या मंचार सामील जावा.",
+    "getStarted": "सुरू करात",
+    "learnMore": "अधिक जाणून घेयात"
+  }
+}

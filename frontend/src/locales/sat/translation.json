@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "ᱞᱚᱜ ᱤᱱ",
+    "signup": "ᱥᱟᱭᱤᱱ ᱟᱯ",
+    "notifications": "ᱥᱩᱪᱚᱱᱟ",
+    "viewAllNotifications": "ᱢᱮᱱᱟᱜ ᱥᱩᱪᱚᱱᱟ ᱧᱮᱞ",
+    "accountSettings": "ᱮᱠᱟᱣ ᱥᱮᱴᱤᱝ",
+    "logout": "ᱞᱚᱜ ᱟᱣᱴ"
+  },
+  "sidebar": {
+    "dashboard": "ᱰᱮᱥᱵᱚᱨᱰ",
+    "mySubmissions": "᱾ᱜ ᱟᱹᱬᱤ",
+    "reportIssue": "ᱢᱟᱦᱟ ᱨᱤᱯᱚᱨᱴ",
+    "aiInsights": "AI ᱯᱟᱲᱦᱟᱣ",
+    "manageProjects": "ᱯᱨᱚᱡᱮᱠᱴ ᱥᱟᱢᱞᱟᱣ",
+    "userManagement": "ᱭᱩᱡᱚᱨ ᱢᱟᱱᱮᱡᱢᱮᱱᱴ",
+    "systemReports": "ᱥᱤᱥᱴᱮᱢ ᱨᱤᱯᱚᱨᱴ",
+    "citizenPortal": "ᱨᱮᱭᱟᱜ ᱠᱟᱹᱢᱤ ᱯᱚᱨᱴᱟᱞ",
+    "officialPortal": "ᱟᱯᱷᱤᱥᱟᱲ ᱯᱚᱨᱴᱟᱞ",
+    "adminPortal": "ᱟᱰᱢᱤᱱ ᱯᱚᱨᱴᱟᱞ"
+  },
+  "landing": {
+    "title1": "ᱰᱮᱢᱚᱠᱨᱮᱥᱤ ᱥᱚᱠᱛᱤ",
+    "title2": "ᱛᱮᱠᱱᱚᱞᱚᱡᱤ ᱡᱚᱛᱮ",
+    "subtitle": "ᱟᱰᱵᱷᱟᱱᱥᱰ AI ᱵᱮᱵᱷᱟᱨ ᱠᱟᱛᱮ ᱨᱮᱭᱟᱜ ᱠᱟᱹᱢᱤ ᱟᱨ ᱢᱟᱹᱦᱤᱛ ᱯᱚᱨᱴᱟᱞᱽ ᱡᱚᱦᱚᱨ।",
+    "getStarted": "ᱥᱩᱨᱩ ᱦᱩᱭ",
+    "learnMore": "ᱚᱯᱟᱨ ᱡᱟᱱᱟ"
+  }
+}

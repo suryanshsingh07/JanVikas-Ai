@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "লগ ইন",
+    "signup": "চাইন আপ",
+    "notifications": "জাননী",
+    "viewAllNotifications": "সকলো জাননী চাওক",
+    "accountSettings": "একাউণ্ট ছেটিংছ",
+    "logout": "লগ আউট"
+  },
+  "sidebar": {
+    "dashboard": "ডেছবৰ্ড",
+    "mySubmissions": "মোৰ আবেদনসমূহ",
+    "reportIssue": "সমস্যা জনাওক",
+    "aiInsights": "AI বিশ্লেষণ",
+    "manageProjects": "প্ৰকল্প পৰিচালনা কৰক",
+    "userManagement": "ব্যৱহাৰকাৰী ব্যৱস্থাপনা",
+    "systemReports": "ছিষ্টেম ৰিপোৰ্ট",
+    "citizenPortal": "নাগৰিক পৰ্টেল",
+    "officialPortal": "বিষয়া পৰ্টেল",
+    "adminPortal": "প্ৰশাসক পৰ্টেল"
+  },
+  "landing": {
+    "title1": "গণতন্ত্ৰৰ ক্ষমতায়ন",
+    "title2": "প্ৰযুক্তিৰ মাধ্যমত",
+    "subtitle": "কৃত্রিম বুদ্ধিমত্তা ব্যৱহাৰ কৰি নাগৰিক আৰু তেওঁলোকৰ নিৰ্বাচিত প্ৰতিনিধিৰ মাজৰ ব্যৱধান দূৰ কৰা মঞ্চত যোগ দিয়ক।",
+    "getStarted": "আৰম্ভ কৰক",
+    "learnMore": "অধিক জানক"
+  }
+}

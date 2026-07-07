@@ -1,0 +1,219 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FileText, Filter, Search, ArrowRight, MapPin } from 'lucide-react';
+import { useSubmissions } from '../../hooks/useSubmissions';
+import { getCategory, getStatus } from '../../utils/helpers';
+import { formatDate } from '../../utils/formatters';
+import { CATEGORIES, SUBMISSION_STATUSES } from '../../constants';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { usePagination } from '../../hooks/usePagination';
+
+const MySubmissions = () => {
+  const [filters, setFilters] = useState({ category: '', status: '', search: '' });
+  const { page, limit, goToPage, pageNumbers } = usePagination(1, 10);
+  
+  const { data, pagination, loading, updateParams } = useSubmissions({
+    page,
+    limit,
+    ...filters
+  });
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const applyFilters = () => {
+    goToPage(1); // Reset to page 1 on filter change
+    updateParams({ ...filters, page: 1 });
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      applyFilters();
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-display font-bold">My Submissions</h1>
+          <p className="text-gray-500 dark:text-gray-400">Track and manage all your reported issues.</p>
+        </div>
+        <Link 
+          to="/citizen/submit" 
+          className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+        >
+          Report New Issue
+        </Link>
+      </div>
+
+      {/* Filters Bar */}
+      <div className="glass-card p-4 rounded-xl flex flex-col md:flex-row gap-4">
+        <div className="flex-1 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+            <Search size={18} />
+          </div>
+          <input
+            type="text"
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            onKeyPress={handleKeyPress}
+            placeholder="Search your submissions..."
+            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+        
+        <div className="flex gap-2">
+          <select
+            name="category"
+            value={filters.category}
+            onChange={handleFilterChange}
+            className="w-full sm:w-auto px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Categories</option>
+            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+          </select>
+          
+          <select
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}
+            className="w-full sm:w-auto px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Statuses</option>
+            {SUBMISSION_STATUSES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+          </select>
+
+          <button 
+            onClick={applyFilters}
+            className="px-4 py-2 bg-surfaceHover border border-border rounded-lg hover:bg-border transition-colors flex items-center justify-center"
+            title="Apply Filters"
+          >
+            <Filter size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Submissions List */}
+      <div className="glass-card rounded-xl overflow-hidden">
+        {loading ? (
+          <div className="p-12 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        ) : data.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4 border border-border">
+              <FileText className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No submissions found</h3>
+            <p className="text-gray-500 max-w-md mx-auto">
+              We couldn't find any submissions matching your current filters. Try adjusting them or report a new issue.
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {data.map((sub) => {
+              const category = getCategory(sub.category);
+              const status = getStatus(sub.status);
+              
+              return (
+                <Link 
+                  key={sub._id} 
+                  to={`/citizen/track/${sub._id}`}
+                  className="block p-4 sm:p-6 hover:bg-surfaceHover transition-colors group"
+                >
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Main Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${status.bg} ${status.color}`}>
+                          {status.label}
+                        </span>
+                        {sub.aiAnalysis?.isDuplicate && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-warning/10 text-warning">
+                            Duplicate Flagged
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-500 hidden sm:inline-block">
+                          • {formatDate(sub.createdAt)}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-lg font-semibold mb-1 group-hover:text-primary-500 transition-colors truncate">
+                        {sub.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">
+                        {sub.description}
+                      </p>
+                      
+                      <div className="flex flex-wrap items-center gap-4 mt-3">
+                        <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-300">
+                          <span className="w-5 h-5 rounded-full bg-background border border-border flex items-center justify-center">
+                            {category.label.charAt(0)}
+                          </span>
+                          {category.label}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <MapPin size={12} />
+                          {sub.location.district || 'Unknown Location'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right side - Action */}
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 pl-0 sm:pl-6 min-w-[120px]">
+                      <div className="text-sm font-medium text-primary-500 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        Track Details <ArrowRight size={16} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      {!loading && pagination.pages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => { goToPage(page - 1); updateParams({ page: page - 1 }); }}
+            disabled={page === 1}
+            className="px-3 py-1 rounded border border-border bg-surface hover:bg-surfaceHover disabled:opacity-50"
+          >
+            Prev
+          </button>
+          
+          {pageNumbers.map((p, i) => (
+            <button
+              key={i}
+              onClick={() => p !== '...' && (goToPage(p), updateParams({ page: p }))}
+              disabled={p === '...'}
+              className={`px-3 py-1 rounded border ${
+                page === p 
+                  ? 'bg-primary-500 text-white border-primary-500' 
+                  : 'bg-surface border-border hover:bg-surfaceHover'
+              } ${p === '...' ? 'cursor-default opacity-50' : ''}`}
+            >
+              {p}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => { goToPage(page + 1); updateParams({ page: page + 1 }); }}
+            disabled={page === pagination.pages}
+            className="px-3 py-1 rounded border border-border bg-surface hover:bg-surfaceHover disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MySubmissions;

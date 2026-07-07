@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "লগ ইন",
+    "signup": "সাইন আপ",
+    "notifications": "বিজ্ঞপ্তি",
+    "viewAllNotifications": "সব বিজ্ঞপ্তি দেখুন",
+    "accountSettings": "অ্যাকাউন্ট সেটিংস",
+    "logout": "লগ আউট"
+  },
+  "sidebar": {
+    "dashboard": "ড্যাশবোর্ড",
+    "mySubmissions": "আমার অভিযোগ",
+    "reportIssue": "সমস্যা জানান",
+    "aiInsights": "AI বিশ্লেষণ",
+    "manageProjects": "প্রকল্প পরিচালনা করুন",
+    "userManagement": "ব্যবহারকারী ব্যবস্থাপনা",
+    "systemReports": "সিস্টেম রিপোর্ট",
+    "citizenPortal": "নাগরিক পোর্টাল",
+    "officialPortal": "কর্মকর্তা পোর্টাল",
+    "adminPortal": "প্রশাসক পোর্টাল"
+  },
+  "landing": {
+    "title1": "গণতন্ত্রের ক্ষমতায়ন",
+    "title2": "প্রযুক্তির মাধ্যমে",
+    "subtitle": "কৃত্রিম বুদ্ধিমত্তা ব্যবহার করে নাগরিক এবং তাদের নির্বাচিত প্রতিনিধিদের মধ্যে সেতু গড়ার প্ল্যাটফর্মে যোগ দিন।",
+    "getStarted": "শুরু করুন",
+    "learnMore": "আরও জানুন"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "navbar": {
+    "login": "ಲಾಗ್ ಇನ್",
+    "signup": "ಸೈನ್ ಅಪ್",
+    "notifications": "ಅಧಿಸೂಚನೆಗಳು",
+    "viewAllNotifications": "ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಿ",
+    "accountSettings": "ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+    "logout": "ಲಾಗ್ ಔಟ್"
+  },
+  "sidebar": {
+    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "mySubmissions": "ನನ್ನ ದೂರುಗಳು",
+    "reportIssue": "ಸಮಸ್ಯೆ ವರದಿ ಮಾಡಿ",
+    "aiInsights": "AI ವಿಶ್ಲೇಷಣೆ",
+    "manageProjects": "ಯೋಜನೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ",
+    "userManagement": "ಬಳಕೆದಾರ ನಿರ್ವಹಣೆ",
+    "systemReports": "ಸಿಸ್ಟಮ್ ವರದಿಗಳು",
+    "citizenPortal": "ನಾಗರಿಕ ಪೋರ್ಟಲ್",
+    "officialPortal": "ಅಧಿಕಾರಿ ಪೋರ್ಟಲ್",
+    "adminPortal": "ನಿರ್ವಾಹಕ ಪೋರ್ಟಲ್"
+  },
+  "landing": {
+    "title1": "ಪ್ರಜಾಪ್ರಭುತ್ವದ ಸಬಲೀಕರಣ",
+    "title2": "ತಂತ್ರಜ್ಞಾನದ ಮೂಲಕ",
+    "subtitle": "ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ ಬಳಸಿ ನಾಗರಿಕರು ಮತ್ತು ಅವರ ಚುನಾಯಿತ ಪ್ರತಿನಿಧಿಗಳ ನಡುವಿನ ಅಂತರವನ್ನು ಕಡಿಮೆ ಮಾಡುವ ವೇದಿಕೆಯನ್ನು ಸೇರಿ.",
+    "getStarted": "ಪ್ರಾರಂಭಿಸಿ",
+    "learnMore": "ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ"
+  }
+}
