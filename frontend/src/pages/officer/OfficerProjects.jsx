@@ -46,24 +46,36 @@ const OfficerProjects = () => {
   }, [user]);
 
   const onSubmit = async (data) => {
+    if (!user?.state || !user?.district) {
+      toast.error('Your profile must include state and district before proposing a project.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
-        ...data,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        estimatedBudget: Number(data.estimatedBudget) || 0,
         location: {
           state: user.state,
           district: user.district,
-          constituency: user.constituency
-        }
+          constituency: user.constituency || '',
+        },
       };
-      
+
       await projectService.create(payload);
       toast.success('Project created successfully');
       setShowForm(false);
       reset();
       fetchProjects();
     } catch (error) {
-      toast.error('Failed to create project');
+      const validationErrors = Array.isArray(error.errors)
+        ? error.errors.map((err) => err.message).join('. ')
+        : null;
+
+      toast.error(validationErrors || error.message || 'Failed to create project');
     } finally {
       setIsSubmitting(false);
     }

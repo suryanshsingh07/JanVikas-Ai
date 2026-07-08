@@ -47,7 +47,8 @@ const OfficerSubmissions = () => {
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
-      await submissionService.updateStatus(id, newStatus, `Status updated to ${newStatus} by Officer office.`);
+      const roleLabel = user?.role === 'ngo' ? 'NGO' : 'Officer';
+      await submissionService.updateStatus(id, newStatus, `Status updated to ${newStatus} by ${roleLabel}.`);
       toast.success('Status updated successfully');
       refresh();
     } catch (error) {
@@ -60,8 +61,8 @@ const OfficerSubmissions = () => {
       <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold">All Submissions</h1>
-          <p className="text-gray-500 dark:text-gray-400">Manage and review all issues reported by citizens in your area.</p>
+          <h1 className="text-2xl font-display font-bold">All Reports</h1>
+          <p className="text-gray-500 dark:text-gray-400">Manage and review all reports submitted by citizens in your area.</p>
         </div>
       </div>
 
@@ -76,8 +77,8 @@ const OfficerSubmissions = () => {
             name="search"
             value={filters.search}
             onChange={handleFilterChange}
-            onKeyPress={(e) => e.key === 'Enter' && applyFilters()}
-            placeholder="Search by title, description, or ID..."
+            onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
+            placeholder="Search reports by title, description, or ID..."
             className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
           />
         </div>
@@ -129,7 +130,7 @@ const OfficerSubmissions = () => {
           <table className="w-full text-left text-sm">
             <thead className="bg-surfaceHover border-b border-border">
               <tr>
-                <th className="px-4 py-3 font-medium">Issue Detail</th>
+                <th className="px-4 py-3 font-medium">Report Detail</th>
                 <th className="px-4 py-3 font-medium">Citizen</th>
                 <th className="px-4 py-3 font-medium">AI Priority</th>
                 <th className="px-4 py-3 font-medium">Votes</th>
@@ -164,7 +165,7 @@ const OfficerSubmissions = () => {
                             {category.label.charAt(0)}
                           </div>
                           <div>
-                            <Link to={`/citizen/track/${sub._id}`} className="font-semibold text-base hover:text-primary-500 transition-colors line-clamp-1">
+                            <Link to={`/submissions/${sub._id}`} className="font-semibold text-base hover:text-primary-500 transition-colors line-clamp-1">
                               {sub.title}
                             </Link>
                             <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
@@ -222,10 +223,11 @@ const OfficerSubmissions = () => {
                       
                       <td className="px-4 py-4 whitespace-nowrap text-right">
                         <Link 
-                          to={`/citizen/track/${sub._id}`}
-                          className="p-2 inline-flex items-center justify-center rounded hover:bg-surfaceHover text-gray-500 hover:text-primary-500 transition-colors"
-                          title="View Details"
+                          to={`/submissions/${sub._id}`}
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-surface hover:bg-surfaceHover text-gray-700 hover:text-primary-600 transition-colors"
+                          title="View Report Details"
                         >
+                          View Report
                           <ArrowRight size={18} />
                         </Link>
                       </td>

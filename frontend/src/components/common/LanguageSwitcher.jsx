@@ -80,7 +80,7 @@ const LanguageSwitcher = ({ className = '' }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-64 max-h-96 overflow-y-auto no-scrollbar bg-background border border-border shadow-xl rounded-xl z-50"
+            className="fixed left-4 right-4 top-[70px] sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 w-auto sm:w-64 max-h-[80vh] sm:max-h-96 overflow-y-auto no-scrollbar bg-background border border-border shadow-xl rounded-xl z-50"
           >
             <div className="sticky top-0 bg-surface/90 backdrop-blur-md px-4 py-3 border-b border-border z-10 space-y-3">
               <div>

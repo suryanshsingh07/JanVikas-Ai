@@ -26,12 +26,17 @@ const notificationSchema = new mongoose.Schema(
         'project_update',
         'system',
         'ai_insight',
+        'new_issue',
+        'tender_posted',
+        'project_proposed',
+        'tender_action',
       ],
       default: 'system',
     },
     data: {
       submissionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Submission' },
       projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
+      tenderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Tender' },
       link: String,
     },
     isRead: { type: Boolean, default: false },
@@ -41,6 +46,8 @@ const notificationSchema = new mongoose.Schema(
       enum: ['low', 'normal', 'high'],
       default: 'normal',
     },
+    // For broadcast notifications sent to all officials
+    isGlobal: { type: Boolean, default: false },
   },
   {
     timestamps: true,

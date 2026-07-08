@@ -14,10 +14,11 @@ export const useSubmissions = (initialParams = {}) => {
     setError(null);
     try {
       const res = await submissionService.getAll(params);
-      setData(res.data);
-      setPagination(res.pagination);
+      setData(res.data || []);
+      setPagination(res.pagination || { total: 0, page: 1, limit: 10, pages: 1 });
     } catch (err) {
       setError(err.message || 'Failed to fetch submissions');
+      setData([]);
     } finally {
       setLoading(false);
     }

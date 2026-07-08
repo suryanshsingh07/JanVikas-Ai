@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Zap } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Zap, ShieldX, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -15,11 +15,54 @@ const DEMO_CREDENTIALS = [
   { role: 'Admin', email: 'admin@janvikas.ai', password: 'password123', color: 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/20' },
 ];
 
+/* ─── Account Disabled Screen ─────────────────────────────── */
+const AccountDisabledScreen = ({ message, onBack }) => (
+  <div className="text-center py-4">
+    <div className="flex justify-center mb-6">
+      <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+        <ShieldX size={40} className="text-red-500" />
+      </div>
+    </div>
+    <h2 className="text-2xl font-display font-bold mb-3 text-red-600 dark:text-red-400">
+      Account Disabled
+    </h2>
+    <p className="text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+      {message || 'Your account has been disabled by an administrator.'}
+    </p>
+    <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 mb-6 text-left">
+      <p className="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-2">
+        What to do next?
+      </p>
+      <ul className="text-sm text-orange-600 dark:text-orange-500 space-y-1.5 list-disc list-inside">
+        <li>Contact your officer or department administrator</li>
+        <li>Email support at <span className="font-medium">support@janvikas.ai</span></li>
+        <li>Call helpline: <span className="font-medium">1800-XXX-XXXX</span></li>
+      </ul>
+    </div>
+    <div className="flex gap-3">
+      <button
+        onClick={onBack}
+        className="flex-1 py-2.5 border border-border rounded-lg text-sm font-medium hover:bg-surfaceHover transition-colors"
+      >
+        ← Try Again
+      </button>
+      <a
+        href="mailto:support@janvikas.ai"
+        className="flex-1 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors flex items-center justify-center gap-2"
+      >
+        <Phone size={14} /> Contact Support
+      </a>
+    </div>
+  </div>
+);
+
 const Login = () => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeDemo, setActiveDemo] = useState(null);
+  const [accountDisabled, setAccountDisabled] = useState(false);
+  const [disabledMsg, setDisabledMsg] = useState('');
   const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -48,8 +91,20 @@ const Login = () => {
       } else {
         navigate(from, { replace: true });
       }
+    } else if (result.accountDisabled) {
+      setAccountDisabled(true);
+      setDisabledMsg(result.message);
     }
   };
+
+  if (accountDisabled) {
+    return (
+      <AccountDisabledScreen
+        message={disabledMsg}
+        onBack={() => setAccountDisabled(false)}
+      />
+    );
+  }
 
   return (
     <div>

@@ -58,7 +58,9 @@ const login = asyncHandler(async (req, res) => {
   }
 
   if (!user.isActive) {
-    throw createError('Account has been deactivated. Contact support.', 403);
+    const err = createError('Your account has been disabled. Please contact your administrator.', 403);
+    err.code = 'ACCOUNT_DISABLED';
+    throw err;
   }
 
   const isMatch = await user.comparePassword(password);

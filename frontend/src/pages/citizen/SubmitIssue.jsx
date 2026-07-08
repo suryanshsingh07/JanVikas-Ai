@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Mic, MicOff, MapPin, Upload, X, Send, AlertCircle, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import L from 'leaflet';
 import { useAuth } from '../../hooks/useAuth';
 import { submissionService } from '../../services/submissionService';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
@@ -11,6 +12,14 @@ import { useGeolocation } from '../../hooks/useGeolocation';
 import { CATEGORIES, LANGUAGES } from '../../constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import BackButton from '../../components/common/BackButton';
+import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, useMap, useMapEvents } from 'react-leaflet';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 const SubmitIssue = () => {
   const { user } = useAuth();
@@ -20,7 +29,13 @@ const SubmitIssue = () => {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [videos, setVideos] = useState([]);
   const [videoPreviews, setVideoPreviews] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState('hi-IN'); // Default to Hindi
+  const [speechLanguage, setSpeechLanguage] = useState('en-US'); // Default to English for voice recognition
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [locationMode, setLocationMode] = useState('live'); // live or manual
+  const [placeName, setPlaceName] = useState('');
+  const [nearbyPlaces, setNearbyPlaces] = useState([]);
+  const [locationDetailsError, setLocationDetailsError] = useState(null);
+  const [loadingLocationDetails, setLoadingLocationDetails] = useState(false);
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
     defaultValues: {
@@ -35,19 +50,151 @@ const SubmitIssue = () => {
 
   // Hooks
   const { 
-    isRecording, transcript, startRecording, stopRecording, clearRecording 
-  } = useVoiceRecorder(selectedLanguage);
+    isRecording, transcript, startRecording, stopRecording, clearRecording, clearTranscript 
+  } = useVoiceRecorder(speechLanguage);
   
-  const { coordinates, requestLocation, loaded: locationLoaded, error: locationError } = useGeolocation({ autoRequest: false });
+  const originalLanguage = speechLanguage === 'auto'
+    ? (navigator.language?.split('-')[0] || 'en')
+    : speechLanguage.split('-')[0];
+
+  const { coordinates, requestLocation, loaded: locationLoaded, error: locationError } = useGeolocation({ autoRequest: true });
+
+  const mapCenter = selectedLocation
+    ? [selectedLocation.lat, selectedLocation.lng]
+    : coordinates
+      ? [coordinates[1], coordinates[0]]
+      : [20.5937, 78.9629]; // India center fallback
+
+  useEffect(() => {
+    if (locationMode === 'live' && coordinates) {
+      setSelectedLocation({ lat: coordinates[1], lng: coordinates[0] });
+    }
+  }, [coordinates, locationMode]);
+
+  useEffect(() => {
+    if (!selectedLocation) {
+      setPlaceName('');
+      setNearbyPlaces([]);
+      setLocationDetailsError(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const fetchLocationDetails = async () => {
+      setLoadingLocationDetails(true);
+      setLocationDetailsError(null);
+      setNearbyPlaces([]);
+
+      const lat = selectedLocation.lat;
+      const lng = selectedLocation.lng;
+
+      try {
+        const reverseResponse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&addressdetails=1`,
+          { signal: controller.signal }
+        );
+
+        if (reverseResponse.ok) {
+          const reverseData = await reverseResponse.json();
+          setPlaceName(reverseData.display_name || 'Selected location');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setLocationDetailsError('Unable to fetch address details.');
+        }
+      }
+
+      try {
+        const query = `
+          [out:json][timeout:10];
+          (
+            node(around:250,${lat},${lng})["name"]["tourism"];
+            node(around:250,${lat},${lng})["name"]["historic"];
+            node(around:250,${lat},${lng})["name"]["amenity"];
+            node(around:250,${lat},${lng})["name"]["shop"];
+            node(around:250,${lat},${lng})["name"]["leisure"];
+            way(around:250,${lat},${lng})["name"]["tourism"];
+            way(around:250,${lat},${lng})["name"]["historic"];
+            way(around:250,${lat},${lng})["name"]["amenity"];
+            way(around:250,${lat},${lng})["name"]["shop"];
+            way(around:250,${lat},${lng})["name"]["leisure"];
+          );
+          out center 20;
+        `;
+
+        const overpassResponse = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          body: query,
+          signal: controller.signal,
+          headers: { 'Content-Type': 'text/plain' },
+        });
+
+        if (overpassResponse.ok) {
+          const overpassData = await overpassResponse.json();
+          const places = overpassData.elements
+            .map((item) => {
+              const name = item.tags?.name;
+              if (!name) return null;
+              const type = item.tags?.tourism || item.tags?.historic || item.tags?.amenity || item.tags?.shop || item.tags?.leisure || 'place';
+              const lat = item.type === 'node'
+                ? item.lat
+                : item.center?.lat;
+              const lng = item.type === 'node'
+                ? item.lon
+                : item.center?.lon;
+              if (lat == null || lng == null) return null;
+              return {
+                id: `${item.type}-${item.id}`,
+                name,
+                type,
+                lat,
+                lng,
+              };
+            })
+            .filter(Boolean)
+            .slice(0, 8);
+
+          setNearbyPlaces(places);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setLocationDetailsError('Unable to load nearby landmarks.');
+        }
+      } finally {
+        setLoadingLocationDetails(false);
+      }
+    };
+
+    fetchLocationDetails();
+    return () => controller.abort();
+  }, [selectedLocation]);
+
+  const LocationPicker = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (locationMode === 'live' && selectedLocation) {
+        map.setView([selectedLocation.lat, selectedLocation.lng], map.getZoom());
+      }
+    }, [locationMode, selectedLocation, map]);
+
+    useMapEvents({
+      click(e) {
+        setSelectedLocation(e.latlng);
+        setLocationMode('manual');
+      },
+    });
+    return null;
+  };
 
   // Update description when voice transcript changes
   useEffect(() => {
     if (transcript) {
       const currentDesc = watch('description');
       setValue('description', currentDesc ? `${currentDesc} ${transcript}` : transcript);
-      clearRecording(); // Clear after appending so we don't duplicate on next update
+      clearTranscript(); // Clear only the transcript string to preserve the audio blob
     }
-  }, [transcript, setValue, watch, clearRecording]);
+  }, [transcript, setValue, watch, clearTranscript]);
 
   // Handle Image Upload
   const handleImageChange = (e) => {
@@ -112,8 +259,12 @@ const SubmitIssue = () => {
   };
 
   const onSubmit = async (data) => {
-    if (!coordinates) {
-      toast.error('Please provide location data before submitting');
+    const finalCoordinates = selectedLocation
+      ? [selectedLocation.lng, selectedLocation.lat]
+      : coordinates;
+
+    if (!finalCoordinates) {
+      toast.error('Please select a pin on the map or capture your GPS location.');
       return;
     }
 
@@ -125,12 +276,11 @@ const SubmitIssue = () => {
       formData.append('description', data.description);
       formData.append('category', data.category);
       formData.append('isAnonymous', data.isAnonymous);
-      formData.append('originalLanguage', selectedLanguage.split('-')[0]);
+      formData.append('originalLanguage', originalLanguage);
       
-      // Location data (using user's base location if exact GPS fails, but we require coordinates)
       const locationData = {
         type: 'Point',
-        coordinates: coordinates,
+        coordinates: finalCoordinates,
         state: user.state,
         district: user.district,
         constituency: user.constituency
@@ -153,7 +303,7 @@ const SubmitIssue = () => {
       const response = await submissionService.create(formData);
       
       toast.success('Issue submitted successfully!');
-      navigate(`/citizen/track/${response.submission._id}`);
+      navigate(`/submissions/${response.submission._id}`);
       
     } catch (error) {
       console.error(error);
@@ -223,11 +373,12 @@ const SubmitIssue = () => {
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-500">Language:</span>
               <select 
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                value={speechLanguage}
+                onChange={(e) => setSpeechLanguage(e.target.value)}
                 className="text-xs bg-surface border border-border rounded p-1"
               >
                 <option value="en-US">English</option>
+                <option value="auto">Auto Detect (Browser Language)</option>
                 <option value="hi-IN">Hindi</option>
                 <option value="mr-IN">Marathi</option>
                 <option value="bn-IN">Bengali</option>
@@ -275,9 +426,18 @@ const SubmitIssue = () => {
               <div className="bg-surface border border-border rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <MapPin className="text-primary-500 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium">Current Selection:</p>
-                    {coordinates ? (
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium">Current Selection:</p>
+                      <span className={`text-[11px] font-semibold uppercase tracking-[0.15em] px-2 py-1 rounded-full ${locationMode === 'live' ? 'bg-primary-100 text-primary-700' : 'bg-surface text-gray-700'}`}>
+                        {locationMode === 'live' ? 'Live' : 'Manual'}
+                      </span>
+                    </div>
+                    {selectedLocation ? (
+                      <p className="text-xs text-success mt-1">
+                        {locationMode === 'live' ? 'Live GPS location:' : 'Manual pin location:'} {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}
+                      </p>
+                    ) : coordinates ? (
                       <p className="text-xs text-success mt-1">
                         GPS acquired: {coordinates[1].toFixed(4)}, {coordinates[0].toFixed(4)}
                       </p>
@@ -290,17 +450,104 @@ const SubmitIssue = () => {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={requestLocation}
-                disabled={locationLoaded && !!coordinates}
-                className="w-full py-2 bg-surface hover:bg-surfaceHover border border-border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {coordinates ? 'Location Captured ✓' : 'Capture Exact GPS Location'}
-              </button>
-              
-              {!coordinates && (
-                <p className="text-xs text-danger text-center">GPS coordinates are required for the heatmap.</p>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLocationMode('live');
+                    requestLocation();
+                  }}
+                  className={`flex-1 py-2 bg-surface hover:bg-surfaceHover border border-border rounded-lg text-sm font-medium transition-colors ${locationMode === 'live' ? 'ring-2 ring-primary-500' : ''}`}
+                >
+                  Use live location
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocationMode('manual')}
+                  className={`flex-1 py-2 bg-surface hover:bg-surfaceHover border border-border rounded-lg text-sm font-medium transition-colors ${locationMode === 'manual' ? 'ring-2 ring-primary-500' : ''}`}
+                >
+                  Set location manually
+                </button>
+              </div>
+
+              {locationError && (
+                <p className="text-xs text-danger text-center">Location error: {locationError.message}</p>
+              )}
+
+              <div className="h-72 rounded-xl overflow-hidden border border-border mt-4">
+                <MapContainer center={mapCenter} zoom={15} scrollWheelZoom className="h-full w-full">
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationPicker />
+                  {(selectedLocation || coordinates) && (
+                    <>
+                      <Marker
+                        position={[selectedLocation ? selectedLocation.lat : coordinates[1], selectedLocation ? selectedLocation.lng : coordinates[0]]}
+                      />
+                      {locationMode === 'live' && selectedLocation && (
+                        <CircleMarker
+                          center={[selectedLocation.lat, selectedLocation.lng]}
+                          radius={10}
+                          pathOptions={{ color: '#2563eb', fillColor: '#93c5fd', fillOpacity: 0.35 }}
+                      >
+                          <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
+                            Live GPS location
+                          </Tooltip>
+                        </CircleMarker>
+                      )}
+                    </>
+                  )}
+                  {nearbyPlaces.map((place) => (
+                    <CircleMarker
+                      key={place.id}
+                      center={[place.lat, place.lng]}
+                      radius={7}
+                      pathOptions={{ color: '#0f766e', fillColor: '#5eead4', fillOpacity: 0.45 }}
+                    >
+                      <Tooltip direction="top" offset={[0, -8]} opacity={1}>
+                        <span className="text-xs font-semibold">{place.name}</span><br />
+                        <span className="text-[11px]">{place.type}</span>
+                      </Tooltip>
+                    </CircleMarker>
+                  ))}
+                </MapContainer>
+              </div>
+
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                {locationMode === 'live'
+                  ? 'Using device location automatically. Tap the map to switch to manual placement.'
+                  : 'Tap on the map to choose a location manually. You can switch back to live location at any time.'}
+              </p>
+
+              <div className="mt-4 rounded-xl bg-surface border border-border p-3">
+                <p className="text-sm font-medium mb-2">Nearby places and landmarks</p>
+                {loadingLocationDetails ? (
+                  <p className="text-xs text-gray-500">Loading nearby landmarks…</p>
+                ) : locationDetailsError ? (
+                  <p className="text-xs text-danger">{locationDetailsError}</p>
+                ) : (
+                  <>
+                    {placeName && <p className="text-xs text-gray-600 mb-2">{placeName}</p>}
+                    {nearbyPlaces.length > 0 ? (
+                      <ul className="space-y-1 text-xs text-gray-700">
+                        {nearbyPlaces.map(place => (
+                          <li key={place.id} className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-primary-500" />
+                            <span>{place.name} <span className="text-gray-400">({place.type})</span></span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-xs text-gray-500">No nearby landmarks found for this location.</p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {!coordinates && !selectedLocation && (
+                <p className="text-xs text-danger text-center">Please capture GPS or choose a pin on the map.</p>
               )}
             </div>
           </div>
@@ -396,7 +643,7 @@ const SubmitIssue = () => {
 
           <button
             type="submit"
-            disabled={isSubmitting || !coordinates}
+            disabled={isSubmitting || !(coordinates || selectedLocation)}
             className="w-full sm:w-auto px-8 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (

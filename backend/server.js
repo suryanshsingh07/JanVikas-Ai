@@ -9,12 +9,25 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const logger = require('./utils/logger');
+
+const ensureRequiredEnv = () => {
+  const required = ['MONGODB_URI', 'JWT_SECRET', 'CLIENT_URL'];
+  const missing = required.filter((name) => !process.env[name]);
+
+  if (missing.length) {
+    logger.error(`Missing required environment variables: ${missing.join(', ')}`);
+    process.exit(1);
+  }
+};
+
+// Validate critical configuration before starting the server
+ensureRequiredEnv();
 
 // ─── Route Imports ────────────────────────────────────────
 const authRoutes = require('./routes/auth');
@@ -26,6 +39,8 @@ const notificationRoutes = require('./routes/notifications');
 const aiRoutes = require('./routes/ai');
 const adminRoutes = require('./routes/admin');
 const accountRoutes = require('./routes/accounts');
+const tenderRoutes = require('./routes/tenders');
+const govRoutes = require('./routes/gov');
 
 // ─── Initialize App ───────────────────────────────────────
 const app = express();
@@ -102,6 +117,8 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/public', require('./routes/public'));
+app.use('/api/tenders', tenderRoutes);
+app.use('/api/gov', govRoutes);
 
 // ─── Root Route ───────────────────────────────────────────
 app.get('/', (req, res) => {

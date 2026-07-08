@@ -44,7 +44,8 @@ api.interceptors.response.use(
     }
 
     // Don't toast validation errors globally (let components handle them)
-    if (status !== 422 && status !== 401) {
+    // Also don't toast 404 errors - they're often expected and handled by components
+    if (status !== 422 && status !== 401 && status !== 404) {
       toast.error(message);
     }
 

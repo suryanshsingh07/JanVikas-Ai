@@ -6,10 +6,41 @@ const Submission = require('../models/Submission');
 const Vote = require('../models/Vote');
 const Comment = require('../models/Comment'); // Required for population
 const Project = require('../models/Project'); // Required for population
+const User = require('../models/User');
 const { createError, asyncHandler, getPagination } = require('../utils/helpers');
 const { analyzeSubmission } = require('../services/aiService');
 const { uploadImages, uploadVideos, uploadVoice } = require('../services/firebaseService');
-const { notifyStatusChange } = require('../services/notificationService');
+const { notifyStatusChange, createNotification } = require('../services/notificationService');
+
+/**
+ * Broadcast a new issue to all officers, departments, ngos, admins in same district (or all if no district)
+ */
+const broadcastNewIssue = async (submission) => {
+  try {
+    const district = submission.location?.district;
+    const filter = {
+      role: { $in: ['officer', 'department', 'ngo', 'admin'] },
+      isActive: true,
+    };
+    if (district) filter.district = district;
+
+    const officials = await User.find(filter).select('_id').lean();
+    const notifications = officials.map((u) =>
+      createNotification({
+        recipient: u._id,
+        title: '🆕 New Issue Raised',
+        message: `A new issue "${submission.title}" has been reported in ${district || 'your area'}. Category: ${submission.category}.`,
+        type: 'new_issue',
+        data: { submissionId: submission._id, link: `/submissions/${submission._id}` },
+        priority: submission.priority === 'critical' ? 'high' : 'normal',
+        isGlobal: !district,
+      })
+    );
+    await Promise.allSettled(notifications);
+  } catch (err) {
+    console.error('broadcastNewIssue error:', err.message);
+  }
+};
 
 /**
  * @route   POST /api/submissions
@@ -65,7 +96,6 @@ const createSubmission = asyncHandler(async (req, res) => {
   });
 
   // ─── Run AI analysis in background ───────────────────
-  // Get recent similar submissions for duplicate detection
   const recentSubmissions = await Submission.find({
     category,
     createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
@@ -77,9 +107,11 @@ const createSubmission = asyncHandler(async (req, res) => {
     recentSubmissions
   );
 
-  // Update submission with AI analysis
   submission.aiAnalysis = aiResult;
   await submission.save();
+
+  // ─── Broadcast notification to officials ─────────────
+  broadcastNewIssue(submission);
 
   res.status(201).json({
     success: true,
@@ -102,17 +134,14 @@ const getSubmissions = asyncHandler(async (req, res) => {
 
   // ─── Build filter ─────────────────────────────────────
   const filter = {};
-  if (category) filter.category = category;
-  if (status) filter.status = status;
-  if (priority) filter.priority = priority;
-  if (state) filter['location.state'] = state;
-  if (district) filter['location.district'] = district;
-  if (isDuplicate !== undefined) filter['aiAnalysis.isDuplicate'] = isDuplicate === 'true';
+  if (category && category.trim()) filter.category = category;
+  if (status && status.trim()) filter.status = status;
+  if (priority && priority.trim()) filter.priority = priority;
+  if (state && state.trim()) filter['location.state'] = state;
+  if (district && district.trim()) filter['location.district'] = district;
+  if (isDuplicate && isDuplicate.trim()) filter['aiAnalysis.isDuplicate'] = isDuplicate === 'true';
 
   // ─── Role-based filtering ─────────────────────────────
-  // Submissions are fully public to all logged-in roles to enable community voting 
-  // and collaborative resolution (NGOs, Officers, Departments).
-  // Pass ?mine=true to scope submissions to the current user only (for citizen dashboard).
   if (req.query.mine === 'true') {
     filter.citizen = req.user._id;
   }
@@ -156,7 +185,8 @@ const getSubmission = asyncHandler(async (req, res) => {
   const submission = await Submission.findById(req.params.id)
     .populate('citizen', 'name avatar role constituency')
     .populate('comments')
-    .populate('relatedProject', 'title status priorityScore');
+    .populate('relatedProject', 'title status priorityScore')
+    .populate('statusHistory.changedBy', 'name role');
 
   if (!submission) {
     throw createError('Submission not found', 404);
@@ -171,11 +201,11 @@ const getSubmission = asyncHandler(async (req, res) => {
 
 /**
  * @route   PUT /api/submissions/:id/status
- * @desc    Update submission status (MP/Admin)
- * @access  Private (MP, Admin)
+ * @desc    Update submission status (Officer/Department/NGO/Admin)
+ * @access  Private (Officer, Department, NGO, Admin)
  */
 const updateStatus = asyncHandler(async (req, res) => {
-  const { status, note } = req.body;
+  const { status, note, rejectionReason } = req.body;
 
   const submission = await Submission.findById(req.params.id);
   if (!submission) throw createError('Submission not found', 404);
@@ -188,15 +218,79 @@ const updateStatus = asyncHandler(async (req, res) => {
     note: note || '',
   });
 
+  // If the status is resolved and request contains files, upload them as resolution evidence
+  if (status === 'resolved' && req.files) {
+    try {
+      const { uploadImages, uploadVideos } = require('../services/firebaseService');
+      let evImages = [];
+      let evVideos = [];
+      if (req.files.images) evImages = await uploadImages(req.files.images);
+      if (req.files.videos) evVideos = await uploadVideos(req.files.videos);
+      submission.resolutionEvidence = submission.resolutionEvidence || { images: [], videos: [] };
+      submission.resolutionEvidence.images.push(...evImages);
+      submission.resolutionEvidence.videos.push(...evVideos);
+    } catch (err) {
+      console.error('Error uploading resolution evidence:', err.message);
+    }
+  }
+
+  // ─── If rejected, store reason ───────────────────────
+  if (status === 'rejected' && rejectionReason) {
+    submission.rejectionReason = rejectionReason;
+  }
+
   await submission.save();
 
   // Notify citizen
-  await notifyStatusChange(submission, status, note);
+  await notifyStatusChange(submission, status, note, rejectionReason);
 
   res.json({
     success: true,
     message: `Status updated from ${oldStatus} to ${status}`,
     submission,
+  });
+});
+
+/**
+ * @route   POST /api/submissions/:id/feedback
+ * @desc    Citizen submits feedback after issue is resolved
+ * @access  Private (Citizen — owner only)
+ */
+const addFeedback = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
+
+  if (!rating || rating < 1 || rating > 5) {
+    throw createError('Rating must be between 1 and 5', 400);
+  }
+
+  const submission = await Submission.findById(req.params.id);
+  if (!submission) throw createError('Submission not found', 404);
+
+  // Only the citizen who raised it can give feedback
+  if (submission.citizen.toString() !== req.user._id.toString()) {
+    throw createError('Only the submission owner can provide feedback', 403);
+  }
+
+  if (submission.status !== 'resolved') {
+    throw createError('Feedback can only be submitted for resolved submissions', 400);
+  }
+
+  if (submission.feedback?.submittedAt) {
+    throw createError('Feedback already submitted', 400);
+  }
+
+  submission.feedback = {
+    rating: Number(rating),
+    comment: comment || '',
+    submittedAt: new Date(),
+  };
+
+  await submission.save({ validateBeforeSave: false });
+
+  res.json({
+    success: true,
+    message: 'Thank you for your feedback!',
+    feedback: submission.feedback,
   });
 });
 
@@ -209,14 +303,12 @@ const voteSubmission = asyncHandler(async (req, res) => {
   const submission = await Submission.findById(req.params.id);
   if (!submission) throw createError('Submission not found', 404);
 
-  // Check if already voted
   const existingVote = await Vote.findOne({
     user: req.user._id,
     submission: req.params.id,
   });
 
   if (existingVote) {
-    // Remove vote
     await Vote.deleteOne({ _id: existingVote._id });
     submission.votes = Math.max(0, submission.votes - 1);
     submission.voterIds = submission.voterIds.filter(
@@ -226,7 +318,6 @@ const voteSubmission = asyncHandler(async (req, res) => {
     return res.json({ success: true, message: 'Vote removed', votes: submission.votes, voted: false });
   }
 
-  // Add vote
   await Vote.create({ user: req.user._id, submission: req.params.id });
   submission.votes += 1;
   submission.voterIds.push(req.user._id);
@@ -244,7 +335,6 @@ const deleteSubmission = asyncHandler(async (req, res) => {
   const submission = await Submission.findById(req.params.id);
   if (!submission) throw createError('Submission not found', 404);
 
-  // Only owner or admin can delete
   if (
     submission.citizen.toString() !== req.user._id.toString() &&
     req.user.role !== 'admin'
@@ -285,6 +375,7 @@ module.exports = {
   getSubmissions,
   getSubmission,
   updateStatus,
+  addFeedback,
   voteSubmission,
   deleteSubmission,
   getMapSubmissions,

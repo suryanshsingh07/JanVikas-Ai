@@ -13,6 +13,7 @@ const ALLOWED_IMAGE_TYPES = /jpeg|jpg|png|gif|webp/;
 const ALLOWED_VIDEO_TYPES = /mp4|mov|avi|mkv|webm/;
 const ALLOWED_AUDIO_TYPES = /mp3|wav|ogg|m4a|webm/;
 const ALLOWED_DOC_TYPES = /pdf|doc|docx|txt/;
+const ALLOWED_EVIDENCE_TYPES = /jpeg|jpg|png|gif|webp|mp4|mov|avi|mkv|webm/;
 
 // ─── Local Disk Storage (fallback for dev) ────────────────
 const diskStorage = multer.diskStorage({
@@ -80,6 +81,15 @@ const uploadMixed = multer({
   },
 });
 
+const uploadEvidence = multer({
+  storage: memoryStorage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100 MB
+    files: 7, // 5 images + 2 videos
+  },
+  fileFilter: fileFilter(ALLOWED_EVIDENCE_TYPES),
+});
+
 // ─── Avatar Upload ────────────────────────────────────────
 const uploadAvatar = multer({
   storage: memoryStorage,
@@ -95,5 +105,6 @@ module.exports = {
   uploadVoice,
   uploadDocuments,
   uploadMixed,
+  uploadEvidence,
   uploadAvatar,
 };

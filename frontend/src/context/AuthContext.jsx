@@ -52,6 +52,10 @@ export const AuthProvider = ({ children }) => {
       return { success: true, role: res.data.user.role };
     } catch (error) {
       const msg = error.response?.data?.message || 'Login failed';
+      const code = error.response?.data?.code;
+      if (code === 'ACCOUNT_DISABLED') {
+        return { success: false, accountDisabled: true, message: msg };
+      }
       toast.error(msg);
       return { success: false, message: msg };
     }

@@ -1,19 +1,22 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FileText, Filter, Search, ArrowRight, MapPin } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FileText, Filter, Search, ArrowRight, MapPin, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import { getCategory, getStatus } from '../../utils/helpers';
 import { formatDate } from '../../utils/formatters';
 import { CATEGORIES, SUBMISSION_STATUSES } from '../../constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { usePagination } from '../../hooks/usePagination';
+import { submissionService } from '../../services/submissionService';
 import BackButton from '../../components/common/BackButton';
 
 const MySubmissions = () => {
   const [filters, setFilters] = useState({ category: '', status: '', search: '' });
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const { page, limit, goToPage, pageNumbers } = usePagination(1, 10);
-  
-  const { data, pagination, loading, updateParams } = useSubmissions({
+  const { data, pagination, loading, updateParams, refresh } = useSubmissions({
     page,
     limit,
     mine: true,
@@ -36,19 +39,34 @@ const MySubmissions = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteConfirm) return;
+    setDeleting(true);
+    try {
+      await submissionService.delete(deleteConfirm);
+      toast.success('Report deleted successfully');
+      setDeleteConfirm(null);
+      refresh();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete report');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <BackButton className="mb-6" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold">My Submissions</h1>
-          <p className="text-gray-500 dark:text-gray-400">Track and manage all your reported issues.</p>
+          <h1 className="text-2xl font-display font-bold">My Reports</h1>
+          <p className="text-gray-500 dark:text-gray-400">Track and manage all your submitted reports.</p>
         </div>
         <Link 
           to="/citizen/submit" 
           className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
-          Report New Issue
+          Report a New Issue
         </Link>
       </div>
 
@@ -63,8 +81,8 @@ const MySubmissions = () => {
             name="search"
             value={filters.search}
             onChange={handleFilterChange}
-            onKeyPress={handleKeyPress}
-            placeholder="Search your submissions..."
+            onKeyDown={handleKeyPress}
+            placeholder="Search your reports..."
             className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
           />
         </div>
@@ -111,9 +129,9 @@ const MySubmissions = () => {
             <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4 border border-border">
               <FileText className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">No submissions found</h3>
+            <h3 className="text-lg font-semibold mb-2">No reports found</h3>
             <p className="text-gray-500 max-w-md mx-auto">
-              We couldn't find any submissions matching your current filters. Try adjusting them or report a new issue.
+              We couldn't find any reports matching your current filters. Try adjusting them or report a new issue.
             </p>
           </div>
         ) : (
@@ -123,10 +141,10 @@ const MySubmissions = () => {
               const status = getStatus(sub.status);
               
               return (
-                <Link 
-                  key={sub._id} 
-                  to={`/citizen/track/${sub._id}`}
-                  className="block p-4 sm:p-6 hover:bg-surfaceHover transition-colors group"
+                <div 
+                  key={sub._id}
+                  onClick={() => navigate(`/submissions/${sub._id}`)}
+                  className="block p-4 sm:p-6 hover:bg-surfaceHover transition-colors group cursor-pointer"
                 >
                   <div className="flex flex-col sm:flex-row gap-4">
                     {/* Main Content */}
@@ -167,13 +185,28 @@ const MySubmissions = () => {
                     </div>
 
                     {/* Right side - Action */}
-                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 pl-0 sm:pl-6 min-w-[120px]">
-                      <div className="text-sm font-medium text-primary-500 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        Track Details <ArrowRight size={16} />
-                      </div>
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 sm:gap-3 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 pl-0 sm:pl-6">
+                        <Link
+                        to={`/submissions/${sub._id}`}
+                        className="text-sm font-medium text-primary-500 inline-flex items-center gap-1 hover:underline"
+                        title="View report details"
+                      >
+                        View Report <ArrowRight size={16} />
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteConfirm(sub._id);
+                        }}
+                        className="text-xs px-2.5 py-1.5 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1"
+                        title="Delete this report"
+                      >
+                        <Trash2 size={14} />
+                        <span className="hidden sm:inline">Delete</span>
+                      </button>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -213,6 +246,52 @@ const MySubmissions = () => {
           >
             Next
           </button>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-surface border border-border rounded-xl p-6 max-w-sm mx-4 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                <Trash2 size={24} className="text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Delete Report?</h3>
+                <p className="text-sm text-gray-500">This action cannot be undone.</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              Are you sure you want to permanently delete this report? All associated votes, comments, and feedback will also be removed.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-surfaceHover transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deleting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={16} />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

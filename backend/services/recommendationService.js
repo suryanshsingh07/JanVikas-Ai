@@ -37,7 +37,7 @@ const normalize = (value, min, max) => {
  */
 const scoreUrgency = (submission) => {
   const urgencyLevel = submission.aiAnalysis?.urgencyLevel || 2; // Default 2/5
-  const score = normalize(urgencyLevel, 1, 5) * 100;
+  const score = normalize(urgencyLevel, 1, 5);
   return {
     score,
     weight: WEIGHTS.urgency,
@@ -53,7 +53,7 @@ const scoreUrgency = (submission) => {
  */
 const scoreVotes = (submission, maxVotes) => {
   const votes = submission.votes || 0;
-  const score = normalize(votes, 0, maxVotes) * 100;
+  const score = normalize(votes, 0, maxVotes);
   return {
     score,
     weight: WEIGHTS.votes,
@@ -69,11 +69,11 @@ const scoreVotes = (submission, maxVotes) => {
 const scoreSeverity = (submission) => {
   const sentimentScore = submission.aiAnalysis?.sentimentScore || 0; // -1 to 1
   // Convert sentiment (-1 to 0) to a severity score (0 to 100)
-  const score = sentimentScore < 0 ? Math.abs(sentimentScore) * 100 : 0;
+  const score = sentimentScore < 0 ? Math.abs(sentimentScore) : 0;
   return {
     score,
     weight: WEIGHTS.severity,
-    explanation: `Negative sentiment (${(sentimentScore).toFixed(2)}) suggests a ${score > 60 ? 'high' : 'moderate'} severity problem.`,
+    explanation: `Negative sentiment (${(sentimentScore).toFixed(2)}) suggests a ${score > 0.6 ? 'high' : 'moderate'} severity problem.`,
   };
 };
 
@@ -84,7 +84,7 @@ const scoreSeverity = (submission) => {
  * @returns {Object} Score and explanation
  */
 const scoreGeoImpact = (relatedCount, maxRelated) => {
-  const score = normalize(relatedCount, 0, maxRelated) * 100;
+  const score = normalize(relatedCount, 0, maxRelated);
   return {
     score,
     weight: WEIGHTS.geoImpact,
@@ -177,6 +177,7 @@ const rankSubmissions = (submissions) => {
 
 module.exports = {
   rankSubmissions,
+  rankProjects: rankSubmissions,
   scoreUrgency,
   scoreVotes,
   scoreSeverity,

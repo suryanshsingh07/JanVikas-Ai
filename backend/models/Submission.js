@@ -97,6 +97,12 @@ const submissionSchema = new mongoose.Schema(
       voiceTranscript: { type: String }, // Transcribed voice text
     },
 
+    // ─── Resolution Evidence ─────────────────────────────
+    resolutionEvidence: {
+      images: [{ type: String }],
+      videos: [{ type: String }],
+    },
+
     // ─── AI Analysis Results ─────────────────────────────
     aiAnalysis: {
       keywords: [{ type: String }],
@@ -142,6 +148,16 @@ const submissionSchema = new mongoose.Schema(
       ref: 'User',
     },
     mpNotes: { type: String, default: '' },
+
+    // ─── Rejection Reason ────────────────────────────────
+    rejectionReason: { type: String, default: '' },
+
+    // ─── Citizen Feedback (after resolve) ─────────────────
+    feedback: {
+      rating: { type: Number, min: 1, max: 5 },
+      comment: { type: String, default: '' },
+      submittedAt: { type: Date },
+    },
 
     // ─── Meta ────────────────────────────────────────────
     isAnonymous: { type: Boolean, default: false },

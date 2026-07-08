@@ -64,10 +64,12 @@ const errorHandler = (err, req, res, next) => {
 
   const statusCode = error.statusCode || err.statusCode || 500;
   const message = error.message || 'Internal Server Error';
+  const code = err.code || error.code || undefined;
 
   res.status(statusCode).json({
     success: false,
     message,
+    ...(code && { code }),
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };

@@ -2,45 +2,133 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Users, AlertTriangle, TrendingUp, Briefcase, ArrowRight, BrainCircuit, Activity, MapPin, FileText, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { analyticsService } from '../../services/analyticsService';
-import { aiService } from '../../services/aiService';
-import { SkeletonCard, RecommendationSkeleton } from '../../components/common/SkeletonCard';
+import api from '../../services/api';
+import {
+  ShieldAlert, Users, Network, Activity, FileText, Briefcase,
+  ArrowRight, TrendingUp, CheckCircle, Clock, AlertTriangle, BarChart3,
+  BrainCircuit, MapPin, Bell
+} from 'lucide-react';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { SkeletonCard } from '../../components/common/SkeletonCard';
 import StatCounter from '../../components/ui/StatCounter';
-import { debounce } from 'lodash';
 import BackButton from '../../components/common/BackButton';
 
 const OfficerDashboard = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [stats, setStats] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submissionsLoading, setSubmissionsLoading] = useState(true);
 
-  const fetchDashboardData = useCallback(debounce(async () => {
-    setLoading(true);
+  const fetchStats = useCallback(async () => {
     try {
-      const filters = { district: user?.district };
-      const [statsRes, recsRes] = await Promise.all([
-        analyticsService.getOverview(filters),
-        aiService.getRecommendations({ ...filters, limit: 3 })
-      ]);
-      setStats(statsRes);
-      setRecommendations(recsRes.data);
-    } catch (error) {
-      console.error("Failed to load dashboard data", error);
-    } finally {
-      setLoading(false);
+      const res = await api.get('/analytics/overview', { params: { district: user?.district } });
+      setStats(res.data);
+    } catch (err) {
+      console.error('Failed to load officer stats:', err);
     }
-  }, 300), [user]);
+  }, [user]);
+
+  const fetchSubmissions = useCallback(async () => {
+    setSubmissionsLoading(true);
+    try {
+      const res = await api.get('/submissions', { 
+        params: { limit: 10, sortBy: 'createdAt', order: 'desc', district: user?.district } 
+      });
+      const all = res.data || [];
+      const actionable = all
+        .filter(sub => sub.status !== 'resolved' && sub.status !== 'rejected')
+        .slice(0, 5);
+      setSubmissions(actionable);
+    } catch (err) {
+      console.error('Failed to load submissions:', err);
+    } finally {
+      setSubmissionsLoading(false);
+    }
+  }, [user]);
+
+  const fetchProjects = useCallback(async () => {
+    try {
+      const res = await api.get('/projects', { 
+        params: { limit: 5, sort: '-createdAt', district: user?.district } 
+      });
+      setProjects(res.data || []);
+    } catch (err) {
+      console.error('Failed to load projects:', err);
+    }
+  }, [user]);
 
   useEffect(() => {
+    const loadAll = async () => {
+      setLoading(true);
+      await Promise.allSettled([fetchStats(), fetchSubmissions(), fetchProjects()]);
+      setLoading(false);
+    };
     if (user) {
-      fetchDashboardData();
+      loadAll();
     }
-    return () => fetchDashboardData.cancel();
-  }, [user, fetchDashboardData]);
+  }, [user, fetchStats, fetchSubmissions, fetchProjects]);
+
+  const STATUS_COLORS = {
+    pending:     'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+    reviewing:   'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    approved:    'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+    in_progress: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
+    resolved:    'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    rejected:    'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  };
+
+  const totalSub = stats?.submissions?.total ?? 0;
+  const pendingSub = stats?.submissions?.pending ?? 0;
+  const activeProjects = stats?.projects?.active ?? 0;
+  const resolutionRate = stats?.submissions?.resolutionRate ?? 0;
+
+  const statCards = [
+    {
+      title: 'Total Submissions', 
+      value: totalSub,
+      trend: `+${stats?.submissions?.growthRate || 0}% this month`,
+      icon: <Users className="w-5 h-5" />, 
+      color: 'blue',
+      trendUp: true
+    },
+    {
+      title: 'Pending Action', 
+      value: pendingSub,
+      trend: 'Needs attention',
+      icon: <AlertTriangle className="w-5 h-5" />, 
+      color: 'orange',
+      trendUp: false
+    },
+    {
+      title: 'Resolution Rate', 
+      value: resolutionRate,
+      isPercentage: true,
+      trend: 'Target: 80%',
+      icon: <Activity className="w-5 h-5" />, 
+      color: 'green',
+      trendUp: true
+    },
+    {
+      title: 'Active Projects', 
+      value: activeProjects,
+      trend: 'Under execution',
+      icon: <Briefcase className="w-5 h-5" />, 
+      color: 'purple',
+      trendUp: true
+    },
+  ];
+
+  const colorMap = {
+    blue:   'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    red:    'bg-red-500/10 text-red-600 dark:text-red-400',
+    purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+    green:  'bg-green-500/10 text-green-600 dark:text-green-400',
+    orange: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+  };
 
   return (
     <div className="space-y-6">
@@ -48,16 +136,16 @@ const OfficerDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold">
+          <h1 className="text-3xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-400">
             {t('dashboard.welcomeOfficer', { name: user?.name?.split(' ')[0] || '' })}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 mt-1">
             {t('dashboard.OfficerSubtitle', { district: user?.district || '' })}
           </p>
         </div>
         <Link
           to="/officer/projects"
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
           <Briefcase size={18} />
           {t('sidebar.manageProjects')}
@@ -65,225 +153,152 @@ const OfficerDashboard = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading ? (
-          <>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </>
+          Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
         ) : (
-          <>
-            <StatCard
-              title="Total Submissions"
-              value={stats?.submissions?.total || 0}
-              trend={`+${stats?.submissions?.growthRate || 0}% this month`}
-              icon={<Users className="text-blue-500" />}
-              trendUp={true}
-            />
-            <StatCard
-              title="Pending Action"
-              value={stats?.submissions?.pending || 0}
-              trend="Needs attention"
-              icon={<AlertTriangle className="text-warning" />}
-              trendUp={false}
-            />
-            <StatCard
-              title="Resolution Rate"
-              value={stats?.submissions?.resolutionRate || 0}
-              isPercentage={true}
-              trend="Target: 80%"
-              icon={<Activity className="text-success" />}
-              trendUp={true}
-            />
-            <StatCard
-              title="Active Projects"
-              value={stats?.projects?.active || 0}
-              trend="Under execution"
-              icon={<Briefcase className="text-purple-500" />}
-              trendUp={true}
-            />
-          </>
+          statCards.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card p-5 rounded-xl flex items-center gap-4"
+            >
+              <div className={`p-3 rounded-xl ${colorMap[s.color]}`}>{s.icon}</div>
+              <div>
+                <div className="text-2xl font-bold">
+                  <StatCounter value={s.value} />{s.isPercentage ? '%' : ''}
+                </div>
+                <div className="text-sm text-gray-500">{s.title}</div>
+                <p className={`text-xs font-medium mt-1 ${s.trendUp ? 'text-success' : 'text-danger'}`}>
+                  {s.trend}
+                </p>
+              </div>
+            </motion.div>
+          ))
         )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Main Panel: AI Recommendations */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <BrainCircuit className="text-primary-500" />
-              {t('sidebar.aiInsights')}
+        {/* Main Panel: Recent Submissions */}
+        <div className="lg:col-span-2 glass-card rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between p-5 border-b border-border">
+            <h2 className="font-semibold flex items-center gap-2">
+              <FileText size={18} className="text-primary-500" /> Recent Citizen Submissions
             </h2>
-            <Link to="/officer/ai-insights" className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1">
-              {t('dashboard.viewAll')} <ArrowRight size={16} />
+            <Link to="/officer/submissions" className="text-sm text-primary-500 hover:underline flex items-center gap-1">
+              View All <ArrowRight size={14} />
             </Link>
           </div>
-
-          <div className="glass-card rounded-xl overflow-hidden">
-            <div className="bg-primary-50 dark:bg-primary-900/10 border-b border-border p-4 text-sm text-primary-700 dark:text-primary-300 font-medium">
-              Submissions ranked by Urgency, Votes, Severity, Geo-Impact, and Category.
-            </div>
-
-            <div className="divide-y divide-border">
-              {loading ? (
-                <><RecommendationSkeleton /><RecommendationSkeleton /><RecommendationSkeleton /></>
-              ) : recommendations.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No active recommendations found.</div>
-              ) : (
-                recommendations.map((rec, idx) => (
-                  <RecommendationCard key={rec._id} rec={rec} index={idx} />
-                ))
-              )}
-            </div>
+          <div className="divide-y divide-border">
+            {submissionsLoading ? (
+              <div className="p-8 flex justify-center"><LoadingSpinner /></div>
+            ) : submissions.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">No active submissions found in your district.</div>
+            ) : submissions.map(sub => (
+              <Link
+                key={sub._id}
+                to={`/officer/submissions?id=${sub._id}`}
+                className="p-4 flex items-start gap-4 hover:bg-surfaceHover/50 transition-colors block"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{sub.title}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {sub.category} · {sub.location?.district || 'N/A'} · {new Date(sub.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {sub.aiAnalysis?.priorityScore > 0 && (
+                    <div className={`text-xs font-bold px-2 py-1 rounded-full ${
+                      sub.aiAnalysis.priorityScore >= 8 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                      sub.aiAnalysis.priorityScore >= 6 ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    }`}>
+                      P{Math.round(sub.aiAnalysis.priorityScore)}
+                    </div>
+                  )}
+                  <span className={`shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[sub.status] || STATUS_COLORS.pending}`}>
+                    {sub.status?.replace('_', ' ')}
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
 
-        {/* Side Panel: Quick Actions & Summary */}
-        <div className="space-y-6">
+        {/* Side Panel: Quick Actions + Active Projects */}
+        <div className="space-y-4">
+          {/* Quick Actions */}
           <div className="glass-card p-5 rounded-xl">
-            <h3 className="font-semibold mb-4">Quick Actions</h3>
+            <h3 className="font-semibold mb-3">Quick Actions</h3>
             <div className="space-y-2">
-              <Link to="/officer/map" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
-                <div className="flex items-center gap-3 font-medium text-sm">
-                  <div className="w-8 h-8 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-600 flex items-center justify-center">
-                    <MapPin size={16} />
+              {[
+                { label: 'View All Submissions', to: '/officer/submissions', icon: <FileText size={16} />, color: 'text-blue-500' },
+                { label: 'Manage Projects', to: '/officer/projects', icon: <Briefcase size={16} />, color: 'text-purple-500' },
+                { label: 'System Reports', to: '/officer/analytics', icon: <BarChart3 size={16} />, color: 'text-green-500' },
+                { label: 'Submissions Map', to: '/officer/map', icon: <MapPin size={16} />, color: 'text-red-500' },
+                { label: 'AI Insights', to: '/officer/ai-insights', icon: <BrainCircuit size={16} />, color: 'text-indigo-500' },
+                { label: 'Notifications', to: '/officer/notifications', icon: <Bell size={16} />, color: 'text-sky-500' },
+              ].map(({ label, to, icon, color }) => (
+                <Link key={to} to={to}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
+                  <div className={`flex items-center gap-3 text-sm font-medium ${color}`}>
+                    {icon} <span className="text-foreground">{label}</span>
                   </div>
-                  {t('sidebar.dashboard')}
-                </div>
-                <ArrowRight size={16} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
-              </Link>
-
-              <Link to="/officer/submissions" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
-                <div className="flex items-center gap-3 font-medium text-sm">
-                  <div className="w-8 h-8 rounded bg-info/10 text-info flex items-center justify-center">
-                    <Users size={16} />
-                  </div>
-                  {t('sidebar.mySubmissions')}
-                </div>
-                <ArrowRight size={16} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
-              </Link>
-
-              <Link to="/officer/analytics" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-surfaceHover transition-colors group">
-                <div className="flex items-center gap-3 font-medium text-sm">
-                  <div className="w-8 h-8 rounded bg-warning/10 text-warning flex items-center justify-center">
-                    <TrendingUp size={16} />
-                  </div>
-                  {t('sidebar.systemReports')}
-                </div>
-                <ArrowRight size={16} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-gray-900 to-black rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
-            <h3 className="font-bold text-lg mb-2 relative z-10 flex items-center gap-2">
-              <FileText size={18} /> Executive Summary
-            </h3>
-            <p className="text-gray-300 text-sm mb-4 relative z-10">
-              Generate a comprehensive LLM report of this week's constituent demands.
-            </p>
-            <Link
-              to="/officer/ai-insights"
-              className="inline-block bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-100 transition-colors relative z-10"
-            >
-              {t('landing.learnMore')}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const StatCard = ({ title, value, trend, icon, trendUp, isPercentage = false }) => (
-  <div className="glass-card p-5 rounded-xl">
-    <div className="flex justify-between items-start mb-2">
-      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
-      <div className="w-8 h-8 rounded-full bg-surface flex items-center justify-center border border-border">
-        {icon}
-      </div>
-    </div>
-    <div className="text-3xl font-bold mb-1">
-      <StatCounter value={value} />
-      {isPercentage && '%'}
-    </div>
-    <p className={`text-xs font-medium ${trendUp ? 'text-success' : 'text-danger'}`}>
-      {trend}
-    </p>
-  </div>
-);
-
-const RecommendationCard = ({ rec, index }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const factors = rec.rankingFactors ? Object.entries(rec.rankingFactors) : [];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="p-5 hover:bg-surfaceHover transition-colors"
-    >
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="shrink-0 flex flex-col items-center justify-center p-3 bg-surface border border-border rounded-lg min-w-[80px] h-fit">
-          <span className="text-xs text-gray-500 mb-1">Score</span>
-          <span className="text-2xl font-bold text-primary-600">{rec.priorityScore.toFixed(1)}</span>
-        </div>
-
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg mb-1">{rec.title}</h3>
-          <p className="text-sm text-gray-500 line-clamp-2 mb-3">{rec.description}</p>
-
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="font-medium px-2 py-1 rounded-md bg-background border border-border capitalize">{rec.category}</span>
-            <span className="font-medium px-2 py-1 rounded-md bg-background border border-border">{rec.votes} Votes</span>
-            <span className="font-medium px-2 py-1 rounded-md bg-background border border-border">{rec.location.district}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center sm:items-start justify-end sm:justify-center shrink-0 gap-2">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2.5 bg-surface border border-border text-sm font-medium rounded-lg hover:bg-surfaceHover transition-opacity whitespace-nowrap"
-          >
-            <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-          </button>
-          <Link
-            to={`/officer/submissions?id=${rec._id}`}
-            className="px-4 py-2 bg-foreground text-background text-sm font-medium rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
-          >
-            Review
-          </Link>
-        </div>
-      </div>
-
-      {isOpen && (
-        <motion.div
-          initial={{ height: 0, opacity: 0, marginTop: 0 }}
-          animate={{ height: 'auto', opacity: 1, marginTop: '16px' }}
-          exit={{ height: 0, opacity: 0, marginTop: 0 }}
-          className="overflow-hidden"
-        >
-          <div className="bg-surface p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-sm mb-3">Why is this a priority?</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
-              {factors.map(([key, factor]) => (
-                <div key={key} className="flex justify-between items-center">
-                  <span className="text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                  <span className="font-medium text-foreground">{factor.explanation}</span>
-                </div>
+                  <ArrowRight size={14} className="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
+                </Link>
               ))}
             </div>
           </div>
-        </motion.div>
-      )}
-    </motion.div>
+
+          {/* Recent Projects */}
+          <div className="glass-card p-5 rounded-xl">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <TrendingUp size={16} className="text-purple-500" /> Active Projects
+            </h3>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2].map(i => <div key={i} className="h-10 bg-surfaceHover animate-pulse rounded" />)}
+              </div>
+            ) : projects.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">No active projects.</p>
+            ) : projects.map(p => (
+              <div key={p._id} className="flex items-center gap-3 py-2 border-b border-border last:border-0">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${
+                  p.status === 'ongoing' ? 'bg-green-500' :
+                  p.status === 'approved' ? 'bg-blue-500' :
+                  p.status === 'proposed' ? 'bg-yellow-500' : 'bg-gray-400'
+                }`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{p.title}</p>
+                  <p className="text-xs text-gray-500 capitalize">{p.status?.replace('_', ' ')}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Executive Summary */}
+          <div className="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-xl p-5 text-white shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-400/20 rounded-full blur-xl transform translate-x-6 -translate-y-6" />
+            <h3 className="font-bold text-lg mb-2 relative z-10 flex items-center gap-2">
+              <BrainCircuit size={18} /> AI Overview
+            </h3>
+            <p className="text-blue-200 text-sm mb-4 relative z-10">
+              {totalSub} submissions tracked · {resolutionRate}% resolved
+            </p>
+            <Link
+              to="/officer/ai-insights"
+              className="inline-block bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors relative z-10"
+            >
+              Generate Report
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default OfficerDashboard;
-

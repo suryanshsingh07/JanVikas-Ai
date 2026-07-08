@@ -59,7 +59,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
     // Route based on notification type
     if (notif.type.includes('submission') && notif.data?.submissionId) {
       if (user.role === 'citizen') {
-        navigate(`/citizen/track/${notif.data.submissionId}`);
+        navigate(`/submissions/${notif.data.submissionId}`);
       } else {
         navigate(`/${user.role}/submissions?id=${notif.data.submissionId}`);
       }
@@ -90,6 +90,15 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
             </span>
           </Link>
         </div>
+
+        {/* Middle Links (Public Only) */}
+        {isPublic && (
+          <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+            <a href="#features" className="text-sm font-medium hover:text-primary-500 transition-colors">Features</a>
+            <a href="#tenders" className="text-sm font-medium hover:text-primary-500 transition-colors">Open Tenders</a>
+            <a href="#how-it-works" className="text-sm font-medium hover:text-primary-500 transition-colors">How it Works</a>
+          </div>
+        )}
 
         {/* Right Side: Language, Theme, Notifications, Profile */}
         <div className="flex items-center gap-2 sm:gap-4">
@@ -126,7 +135,7 @@ const Navbar = ({ toggleSidebar, isPublic = false }) => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-80 bg-background border border-border shadow-lg rounded-xl overflow-hidden z-50"
+                      className="fixed left-4 right-4 top-[70px] sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 w-auto sm:w-80 bg-background border border-border shadow-lg rounded-xl overflow-hidden z-50"
                     >
                       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface/50">
                         <h3 className="font-semibold text-sm">{t('navbar.notifications')}</h3>

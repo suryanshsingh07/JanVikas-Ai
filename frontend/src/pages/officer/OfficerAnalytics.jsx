@@ -26,9 +26,9 @@ const OfficerAnalytics = () => {
           analyticsService.getTopDistricts({ limit: 5 })
         ]);
 
-        setCategoriesData(catRes.data);
-        setTrendsData(trendsRes.data);
-        setDistrictsData(distRes.data);
+        setCategoriesData(catRes);
+        setTrendsData(trendsRes);
+        setDistrictsData(distRes);
       } catch (error) {
         console.error("Failed to load analytics", error);
       } finally {

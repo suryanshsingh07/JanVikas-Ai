@@ -5,7 +5,7 @@
 const Project = require('../models/Project');
 const Submission = require('../models/Submission'); // Required for population
 const { createError, asyncHandler, getPagination } = require('../utils/helpers');
-const { rankProjects } = require('../services/recommendationService');
+const { rankSubmissions } = require('../services/recommendationService');
 
 /**
  * @route   GET /api/projects
@@ -53,7 +53,7 @@ const getRankedProjects = asyncHandler(async (req, res) => {
     .populate('relatedSubmissions', 'votes title')
     .limit(Number(limit) * 2);
 
-  const ranked = rankProjects(projects);
+  const ranked = rankSubmissions(projects);
 
   res.json({
     success: true,
@@ -102,6 +102,19 @@ const updateProject = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @route   PUT /api/projects/:id/status
+ */
+const updateProjectStatus = asyncHandler(async (req, res) => {
+  const project = await Project.findByIdAndUpdate(
+    req.params.id,
+    { status: req.body.status },
+    { new: true, runValidators: true }
+  );
+  if (!project) throw createError('Project not found', 404);
+  res.json({ success: true, message: 'Project status updated.', project });
+});
+
+/**
  * @route   DELETE /api/projects/:id
  */
 const deleteProject = asyncHandler(async (req, res) => {
@@ -110,4 +123,4 @@ const deleteProject = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Project deleted.' });
 });
 
-module.exports = { getProjects, getRankedProjects, createProject, getProject, updateProject, deleteProject };
+module.exports = { getProjects, getRankedProjects, createProject, getProject, updateProject, updateProjectStatus, deleteProject };

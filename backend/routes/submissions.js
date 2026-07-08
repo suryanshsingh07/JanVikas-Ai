@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const {
   createSubmission, getSubmissions, getSubmission,
-  updateStatus, voteSubmission, deleteSubmission, getMapSubmissions,
+  updateStatus, addFeedback, voteSubmission, deleteSubmission, getMapSubmissions,
 } = require('../controllers/submissionController');
 const { protect, authorize } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
@@ -20,7 +20,6 @@ router.route('/')
   .get(listSubmissionsValidator, validate, getSubmissions)
   .post(
     uploadLimiter,
-    // Handle mixed file uploads (images + videos + voice)
     require('../middlewares/upload').uploadMixed.fields([
       { name: 'images', maxCount: 5 },
       { name: 'videos', maxCount: 2 },
@@ -33,8 +32,16 @@ router.route('/')
 
 router.get('/map', getMapSubmissions);
 router.get('/:id', getSubmission);
-router.put('/:id/status', authorize('officer', 'department', 'ngo', 'admin'), updateStatus);
+router.put('/:id/status', authorize('officer', 'department', 'ngo', 'admin'),
+  require('../middlewares/upload').uploadEvidence.fields([
+    { name: 'images', maxCount: 5 },
+    { name: 'videos', maxCount: 2 },
+  ]),
+  updateStatus
+);
+router.post('/:id/feedback', addFeedback);
 router.post('/:id/vote', voteSubmission);
 router.delete('/:id', deleteSubmission);
 
 module.exports = router;
+

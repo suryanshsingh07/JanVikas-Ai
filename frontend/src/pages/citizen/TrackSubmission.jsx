@@ -162,6 +162,22 @@ const TrackSubmission = () => {
               </div>
             </div>
           )}
+
+          {submission.media?.videos?.length > 0 && (
+            <div className="glass-card p-6 rounded-xl">
+              <h3 className="text-lg font-semibold mb-3 border-b border-border pb-2">Attached Videos</h3>
+              <div className="grid grid-cols-1 gap-4">
+                {submission.media.videos.map((video, idx) => (
+                  <div key={idx} className="rounded-xl overflow-hidden border border-border bg-black">
+                    <video controls className="w-full h-full object-cover">
+                      <source src={video} />
+                      Your browser does not support embedded videos.
+                    </video>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar: Tracking Timeline */}

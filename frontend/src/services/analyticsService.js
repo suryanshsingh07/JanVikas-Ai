@@ -22,6 +22,7 @@ export const analyticsService = {
   },
 
   getTopDistricts: async (params) => {
-    return await api.get('/analytics/districts', { params });
+    const response = await api.get('/analytics/districts', { params });
+    return response.data;
   },
 };

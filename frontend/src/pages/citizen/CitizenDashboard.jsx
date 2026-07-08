@@ -121,7 +121,7 @@ const CitizenDashboard = () => {
                     key={sub._id} 
                     className="glass-card p-4 rounded-xl hover:shadow-md transition-shadow cursor-pointer group"
                   >
-                    <Link to={`/citizen/track/${sub._id}`} className="block">
+                    <Link to={`/submissions/${sub._id}`} className="block">
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2">
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${status.bg} ${status.color}`}>

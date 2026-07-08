@@ -14,7 +14,10 @@ import {
   ShieldAlert,
   Database,
   BrainCircuit,
-  FileBarChart
+  FileBarChart,
+  Bell,
+  ScrollText,
+  MapPin,
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -31,29 +34,44 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           { name: t('sidebar.dashboard'), path: '/citizen', icon: LayoutDashboard },
           { name: t('sidebar.reportIssue'), path: '/citizen/submit', icon: PlusCircle },
           { name: t('sidebar.mySubmissions'), path: '/citizen/submissions', icon: FileText },
+          { name: 'City Complaint Map', path: '/city-map', icon: Map },
+          { name: 'Tenders', path: '/tenders', icon: ScrollText },
+          { name: 'Notifications', path: '/citizen/notifications', icon: Bell },
         ];
       case 'officer':
         return [
           { name: t('sidebar.dashboard'), path: '/officer', icon: LayoutDashboard },
+          { name: t('sidebar.reportIssue'), path: '/officer/submit', icon: PlusCircle },
           { name: 'Account Management', path: '/officer/accounts', icon: Users },
           { name: t('sidebar.aiInsights'), path: '/officer/ai-insights', icon: BrainCircuit },
           { name: 'Submissions Map', path: '/officer/map', icon: Map },
+          { name: 'City Complaint Map', path: '/city-map', icon: MapPin },
           { name: 'All Submissions', path: '/officer/submissions', icon: FileText },
           { name: t('sidebar.manageProjects'), path: '/officer/projects', icon: Briefcase },
+          { name: 'Tenders', path: '/tenders', icon: ScrollText },
           { name: 'Analytics', path: '/officer/analytics', icon: BarChart3 },
+          { name: 'Notifications', path: '/officer/notifications', icon: Bell },
         ];
       case 'department':
         return [
           { name: t('sidebar.dashboard'), path: '/department', icon: LayoutDashboard },
+          { name: t('sidebar.reportIssue'), path: '/department/submit', icon: PlusCircle },
           { name: 'Account Management', path: '/department/accounts', icon: Users },
           { name: 'All Submissions', path: '/department/submissions', icon: FileText },
           { name: t('sidebar.manageProjects'), path: '/department/projects', icon: Briefcase },
+          { name: 'City Complaint Map', path: '/city-map', icon: Map },
+          { name: 'My Tenders', path: '/department/tenders', icon: ScrollText },
           { name: 'Analytics', path: '/department/analytics', icon: BarChart3 },
+          { name: 'Notifications', path: '/department/notifications', icon: Bell },
         ];
       case 'ngo':
         return [
           { name: t('sidebar.dashboard'), path: '/ngo', icon: LayoutDashboard },
+          { name: t('sidebar.reportIssue'), path: '/ngo/submit', icon: PlusCircle },
           { name: 'All Submissions', path: '/ngo/submissions', icon: FileText },
+          { name: 'City Complaint Map', path: '/city-map', icon: Map },
+          { name: 'Tenders', path: '/tenders', icon: ScrollText },
+          { name: 'Notifications', path: '/ngo/notifications', icon: Bell },
         ];
       case 'admin':
         return [
@@ -61,6 +79,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           { name: 'Account Management', path: '/admin/accounts', icon: Users },
           { name: t('sidebar.userManagement'), path: '/admin/users', icon: Users },
           { name: t('sidebar.manageProjects'), path: '/admin/projects', icon: Briefcase },
+          { name: 'City Complaint Map', path: '/city-map', icon: Map },
+          { name: 'Tenders', path: '/admin/tenders', icon: ScrollText },
           { name: 'Content Moderation', path: '/admin/moderation', icon: ShieldAlert },
           { name: t('sidebar.systemReports'), path: '/admin/reports', icon: FileBarChart },
           { name: 'Open Datasets', path: '/admin/datasets', icon: Database },
@@ -99,11 +119,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <nav className="space-y-1">
               {links.map((link) => {
                 const Icon = link.icon;
-                const isActive = location.pathname === link.path;
+                const isActive = location.pathname === link.path ||
+                  (link.path !== '/' && location.pathname.startsWith(link.path) && link.path.length > 3);
                 
                 return (
                   <Link
-                    key={link.name}
+                    key={link.path}
                     to={link.path}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",

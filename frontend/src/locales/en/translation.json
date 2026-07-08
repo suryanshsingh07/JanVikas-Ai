@@ -189,8 +189,10 @@
   "dashboard": {
     "welcomeCitizen": "Welcome back, {{name}} 👋",
     "welcomeOfficial": "Welcome, {{name}}",
+    "welcomeOfficer": "Welcome back, {{name}} 👋",
     "citizenSubtitle": "Here's the status of your reported issues in {{district}}",
     "officerSubtitle": "Here is the live intelligence overview for {{district}}",
+    "OfficerSubtitle": "Live intelligence overview for {{district}} district",
     "reportIssue": "Report New Issue",
     "recentSubmissions": "Recent Submissions",
     "viewAll": "View all",

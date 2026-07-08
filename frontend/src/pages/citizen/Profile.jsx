@@ -13,6 +13,38 @@ const Profile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   
+  // Password state
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+  const [passwords, setPasswords] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    
+    setIsSubmittingPassword(true);
+    try {
+      await authService.changePassword({
+        currentPassword: passwords.currentPassword,
+        newPassword: passwords.newPassword
+      });
+      toast.success('Password updated successfully');
+      setIsChangingPassword(false);
+      setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      toast.error(error.message || 'Failed to update password');
+    } finally {
+      setIsSubmittingPassword(false);
+    }
+  };
+
   const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm({
     defaultValues: {
       name: user?.name || '',
@@ -224,15 +256,76 @@ const Profile = () => {
         </div>
       </div>
       
-      {/* Security Section (Placeholder) */}
+      {/* Security Section */}
       <div className="glass-card rounded-xl p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Shield size={20} className="text-primary-500" /> Security Settings
         </h3>
         <p className="text-sm text-gray-500 mb-4">Update your password to keep your account secure.</p>
-        <button className="px-4 py-2 bg-surface border border-border rounded-lg text-sm font-medium hover:bg-surfaceHover transition-colors">
-          Change Password
-        </button>
+        
+        {!isChangingPassword ? (
+          <button 
+            onClick={() => setIsChangingPassword(true)}
+            className="px-4 py-2 bg-surface border border-border rounded-lg text-sm font-medium hover:bg-surfaceHover transition-colors"
+          >
+            Change Password
+          </button>
+        ) : (
+          <form onSubmit={handlePasswordSubmit} className="space-y-4 max-w-sm mt-4 border-t border-border pt-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Current Password</label>
+              <input
+                type="password"
+                required
+                value={passwords.currentPassword}
+                onChange={(e) => setPasswords({...passwords, currentPassword: e.target.value})}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">New Password</label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={passwords.newPassword}
+                onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Confirm New Password</label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={passwords.confirmPassword}
+                onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsChangingPassword(false);
+                  setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                }}
+                className="px-4 py-2 text-sm font-medium hover:bg-surfaceHover rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmittingPassword}
+                className="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                {isSubmittingPassword ? <LoadingSpinner size="sm" /> : null}
+                Update Password
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

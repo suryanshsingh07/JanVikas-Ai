@@ -54,10 +54,10 @@ Government Officials receive **thousands of development requests** every month t
 
 ## 💡 Solution
 
-**JanVikas AI** — a production-ready, AI-powered platform that acts as the **intelligence layer** between citizens and their government officials.
+**JanVikas AI** — a production-ready, AI-powered platform that acts as the **intelligence layer** between citizens, NGOs, and their government officials.
 
 ```
-CITIZEN PROBLEM → AI PROCESSING → OFFICIAL ACTION → CITIZEN RESOLUTION
+CITIZEN PROBLEM → AI PROCESSING → OFFICIAL ACTION → CITIZEN RESOLUTION & FEEDBACK
 ```
 
 ---
@@ -70,7 +70,9 @@ graph TB
         LANDING[Landing Page]
         AUTH[Auth Pages]
         CITIZEN_UI[Citizen Dashboard]
-        OFFICIAL_UI[Official Dashboard]
+        OFFICIAL_UI[Officer Dashboard]
+        DEPT_UI[Department Dashboard]
+        NGO_UI[NGO Dashboard]
         ADMIN_UI[Admin Dashboard]
     end
 
@@ -78,21 +80,14 @@ graph TB
         API[REST API Server :5000]
         AUTH_MW[JWT Middleware]
         RATE[Rate Limiter]
-        VALID[Input Validator]
         
         subgraph ROUTES["API Routes"]
             R_AUTH[/api/auth]
             R_SUB[/api/submissions]
             R_PROJ[/api/projects]
+            R_TENDER[/api/tenders]
             R_AI[/api/ai]
             R_ANALYTICS[/api/analytics]
-        end
-        
-        subgraph CONTROLLERS["Controllers"]
-            C_AUTH[authController]
-            C_SUB[submissionController]
-            C_PROJ[projectController]
-            C_AI[aiController]
         end
     end
 
@@ -101,7 +96,6 @@ graph TB
         DEDUP[Duplicate Detector]
         PRIORITY[Priority Scorer]
         CLUSTER[Semantic Clusterer]
-        SUMMARY[Executive Summarizer]
     end
 
     subgraph DATA["💾 Data Layer"]
@@ -112,9 +106,8 @@ graph TB
     CLIENT --> API
     API --> AUTH_MW
     AUTH_MW --> ROUTES
-    ROUTES --> CONTROLLERS
-    CONTROLLERS --> AI_ENGINE
-    CONTROLLERS --> DATA
+    ROUTES --> AI_ENGINE
+    ROUTES --> DATA
     AI_ENGINE --> DATA
 ```
 
@@ -156,34 +149,7 @@ sequenceDiagram
     OFFICIAL->>API: PATCH /api/submissions/:id/status
     API->>DB: Update status
     API->>DB: Create notification
-    DB-->>C: Push notification via WebSocket/polling
-```
-
----
-
-## 🧠 AI Pipeline
-
-```mermaid
-flowchart LR
-    INPUT["📥 Raw Submission\n(Text / Voice / Image)"] --> LANG["🌐 Language\nDetection"]
-    LANG --> TRANS["📝 Translation\n(to English for processing)"]
-    TRANS --> KEYWORD["🔑 Keyword\nExtraction\n(TF-IDF)"]
-    KEYWORD --> DEDUP{"🔍 Duplicate\nCheck\n(Cosine Similarity)"}
-    
-    DEDUP -->|"Similarity > 85%"| MERGE["🔗 Merge with\nExisting Issue\n(increment vote count)"]
-    DEDUP -->|"New issue"| SCORE["⚖️ Priority\nScoring"]
-    
-    SCORE --> P1["📍 Geographic\nWeight (×0.20)"]
-    SCORE --> P2["📊 Frequency\nWeight (×0.25)"]
-    SCORE --> P3["⚠️ Severity\nWeight (×0.30)"]
-    SCORE --> P4["📋 Category\nWeight (×0.15)"]
-    SCORE --> P5["✅ Gov Dataset\nGap (×0.10)"]
-    
-    P1 & P2 & P3 & P4 & P5 --> FINAL["🎯 Final Priority\nScore (0-10)"]
-    FINAL --> SAVE["💾 Save to\nMongoDB"]
-    MERGE --> SAVE
-    SAVE --> CLUSTER["🏷️ Cluster into\nSemantic Topics"]
-    CLUSTER --> REPORT["📋 Official Executive\nSummary Report"]
+    DB-->>C: Push notification
 ```
 
 ---
@@ -197,37 +163,29 @@ stateDiagram-v2
     Landing --> Register: Click Sign Up
     
     Login --> CitizenDashboard: role = citizen
-    Login --> OfficialDashboard: role = official
+    Login --> OfficialDashboard: role = officer
+    Login --> DepartmentDashboard: role = department
+    Login --> NGODashboard: role = ngo
     Login --> AdminDashboard: role = admin
     
     state CitizenDashboard {
         [*] --> Home
         Home --> SubmitIssue: + New Issue
-        Home --> MySubmissions: View All
-        MySubmissions --> TrackSubmission: Click Issue
-        Home --> Notifications
-        Home --> Profile
+        Home --> TrackSubmission: Status & Feedback
+        Home --> Tenders: Browse & Propose
+        Home --> CityMap
     }
     
-    state OfficialDashboard {
-        [*] --> Overview
-        Overview --> AIRecommendations: View Priority Queue
-        Overview --> MapView: Geospatial Heatmap
-        Overview --> Analytics: Charts & Trends
-        Overview --> Projects: Manage Projects
-        Overview --> AIInsights: Executive Summary
-    }
-    
-    state AdminDashboard {
-        [*] --> SystemOverview
-        SystemOverview --> UserManagement: Manage Users
-        SystemOverview --> ContentModeration: Review Flagged
-        SystemOverview --> OpenDatasets: Manage Integrations
-        SystemOverview --> Reports: Generate Reports
+    state DepartmentDashboard {
+        [*] --> DeptHome
+        DeptHome --> ManageTenders: Create & Award
+        DeptHome --> Submissions: Manage Issues
     }
     
     CitizenDashboard --> [*]: Logout
     OfficialDashboard --> [*]: Logout
+    DepartmentDashboard --> [*]: Logout
+    NGODashboard --> [*]: Logout
     AdminDashboard --> [*]: Logout
 ```
 
@@ -241,59 +199,45 @@ erDiagram
         ObjectId _id PK
         string name
         string email UK
-        string password
-        enum role "citizen|mp|admin"
-        string state
-        string district
-        string constituency
-        object officialDetails
-        boolean isVerified
+        enum role "citizen|officer|department|ngo|admin"
         boolean isActive
-        date lastLogin
     }
 
     SUBMISSION {
         ObjectId _id PK
         ObjectId citizen FK
         string title
-        string description
-        enum category
         enum status "pending|reviewing|approved|in_progress|resolved|rejected"
-        string originalLanguage
+        string rejectionReason
+        object feedback "rating|comment"
         object location
-        array images
         number votes
-        object aiAnalysis "priorityScore|keywords|duplicateOf|severity"
-        object audioData
+        object aiAnalysis
+    }
+
+    TENDER {
+        ObjectId _id PK
+        ObjectId createdBy FK
+        string title
+        string description
+        enum status "draft|open|closed|awarded|cancelled"
+        number estimatedBudget
+        date deadline
+        array proposals
     }
 
     PROJECT {
         ObjectId _id PK
         ObjectId createdBy FK
         string title
-        string description
         enum status
-        number estimatedBudget
-        number actualCost
-        object location
         array linkedSubmissions FK
     }
 
-    NOTIFICATION {
-        ObjectId _id PK
-        ObjectId user FK
-        string title
-        string message
-        enum type
-        boolean isRead
-        object data
-    }
-
-    USER ||--o{ SUBMISSION : "citizen submits"
-    USER ||--o{ PROJECT : "official creates"
-    USER ||--o{ NOTIFICATION : "receives"
+    USER ||--o{ SUBMISSION : "submits/manages"
+    USER ||--o{ TENDER : "creates/proposes"
+    USER ||--o{ PROJECT : "creates"
     PROJECT }o--o{ SUBMISSION : "addresses"
-    SUBMISSION ||--o| SUBMISSION : "duplicateOf"
 ```
 
 ---
@@ -304,30 +248,33 @@ erDiagram
 | Feature | Description |
 |---------|-------------|
 | 🎤 Voice Submission | Speech-to-text issue filing in Indian languages |
-| 📍 Geo-tagging | Auto-detect location for spatial mapping |
-| 🖼️ Photo Upload | Firebase-backed image storage for evidence |
-| 🔍 Issue Tracker | Real-time status updates with timeline |
-| 🔔 Smart Notifications | Instant alerts when Official acts on issues |
-| 🌐 12 Languages | Full UI & submission support for all major Indian languages |
+| 📍 City Complaint Map | Interactive Leaflet map displaying active complaints across the city |
+| 🖼️ Submission Tracking | Animated status stepper tracking issues from Pending to Resolved |
+| 💬 Issue Feedback | Citizens can rate (1-5 stars) and comment on resolved issues |
+| 📋 Tender Proposals | Citizens can submit project proposals to open government tenders |
 
-### 🏛️ Official Module
+### 🏛️ Officer Module
 | Feature | Description |
 |---------|-------------|
 | 🧠 AI Recommendations | Priority-scored queue of actionable issues |
-| 🗺️ Geospatial Heatmap | Leaflet map with clustered issue markers |
-| 📊 Analytics Dashboard | Recharts-powered trend analysis |
+| 🗺️ Geospatial Heatmap | Map with clustered issue markers |
+| 🚫 Issue Rejection | Officers can reject invalid requests with an attached reason |
 | 🔍 Duplicate Detection | AI-merged duplicate submissions with vote counts |
-| 📋 Executive Summary | LLM-style AI-generated weekly/monthly reports |
 | 📁 Project Manager | Full CRUD project management linked to submissions |
+
+### 🏢 Department Module
+| Feature | Description |
+|---------|-------------|
+| 📜 Tender Management | Create and publish government tenders with specific eligibility (NGOs/Citizens) |
+| ✅ Proposal Approval | Review incoming proposals from NGOs/Citizens and Shortlist or Award them |
+| 📊 Analytics Dashboard | Recharts-powered trend analysis for department operations |
 
 ### 🛡️ Admin Module
 | Feature | Description |
 |---------|-------------|
-| 👥 User Management | Activate/deactivate citizens & MPs |
-| 🚫 Content Moderation | AI + manual review of flagged content |
-| 🗃️ Open Datasets | Integrate government data (PMGSY, JJM, SBM) |
-| 📈 System Reports | National-level analytics and CSV exports |
-| ⚙️ National Oversight | Cross-constituency project monitoring |
+| 👥 User Management | Activate/deactivate accounts (Shows dedicated "Account Disabled" screen on login) |
+| 🚫 Content Moderation | Review flagged content |
+| 📈 System Reports | Platform-wide analytics and CSV exports |
 
 ---
 
@@ -340,8 +287,7 @@ TailwindCSS 3              →  Utility-first styling
 Framer Motion              →  Smooth page/component animations
 React Router v6            →  Client-side routing with role guards
 React Hook Form            →  Form state & validation
-Recharts                   →  Analytics charts
-React Leaflet              →  Interactive geospatial maps
+React Leaflet              →  Interactive geospatial maps for complaints
 Axios                      →  HTTP client with JWT interceptors
 react-hot-toast            →  Toast notifications
 Lucide React               →  Icon library
@@ -354,53 +300,6 @@ Mongoose 8                 →  MongoDB ODM with schema validation
 bcryptjs                   →  Password hashing (12 salt rounds)
 jsonwebtoken               →  JWT auth (7d expiry)
 express-rate-limit         →  DDoS protection
-express-validator          →  Input sanitization
-helmet                     →  HTTP security headers
-morgan                     →  HTTP request logging
-compression                →  Response compression
-```
-
-### Database & Storage
-```
-MongoDB Atlas              →  Cloud NoSQL database (geospatial index)
-Firebase Storage           →  Image & audio file storage
-```
-
----
-
-## 📁 Folder Structure
-
-```
-JanVikas-Ai/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   └── common/          # Navbar, Sidebar, ThemeToggle, LoadingSpinner
-│   │   ├── context/             # AuthContext, ThemeContext, NotificationContext
-│   │   ├── hooks/               # useAuth, useTheme, useGeolocation, usePagination
-│   │   ├── layouts/             # MainLayout, DashboardLayout, AuthLayout
-│   │   ├── pages/
-│   │   │   ├── auth/            # Login, Register, ForgotPassword
-│   │   │   ├── citizen/         # Dashboard, Submit, Track, Profile, Notifications
-│   │   │   ├── official/        # Dashboard, Analytics, Map, Projects, AIInsights
-│   │   │   └── admin/           # Dashboard, Users, Moderation, Reports, Datasets
-│   │   ├── routes/              # AppRoutes, ProtectedRoute, RoleRoute
-│   │   ├── services/            # api.js, authService, submissionService, aiService...
-│   │   ├── styles/              # index.css (Tailwind + CSS variables)
-│   │   └── utils/               # helpers.js, formatters.js
-│   ├── tailwind.config.js
-│   └── vite.config.js
-│
-└── backend/
-    ├── config/                  # db.js (MongoDB), firebase.js
-    ├── controllers/             # authController, submissionController, aiController...
-    ├── middlewares/             # auth.js (JWT), rateLimiter, validate, errorHandler
-    ├── models/                  # User, Submission, Project, Notification
-    ├── routes/                  # auth, submissions, projects, analytics, ai, users
-    ├── services/                # aiService (priority engine, dedup, clustering)
-    ├── utils/                   # helpers.js, logger.js
-    ├── validators/              # authValidator, submissionValidator
-    └── server.js
 ```
 
 ---
@@ -422,14 +321,14 @@ cd JanVikas-Ai
 ```bash
 cd backend
 npm install
-cp .env.example .env    # Fill in your MongoDB URI and JWT secret
+cp .env.example .env    # Fill in your MongoDB URI, JWT secret, and other env vars
 npm run dev             # Starts on http://localhost:5000
 ```
 
 ### 3. Seed Demo Data
 ```bash
 cd backend
-node fix-seeds.js       # Creates the 3 demo users with hashed passwords
+node seed-demo.js       # Creates the 5 demo users (Citizen, Officer, Department, NGO, Admin)
 ```
 
 ### 4. Setup Frontend
@@ -447,107 +346,39 @@ npm run dev             # Starts on http://localhost:5173
 
 | Role | Email | Password | Access |
 |------|-------|----------|--------|
-| 🏠 **Citizen** | `citizen@test.com` | `Password123` | Submit & track issues |
-| 🏛️ **Official** | `official@test.com` | `Password123` | Full Official dashboard + AI insights |
-| 🛡️ **Admin** | `admin@test.com` | `Password123` | System-wide administration |
-
----
-
-## 📈 Analytics & Big Data Architecture
-
-```mermaid
-graph TD
-    A[Citizen Interactions] --> B(Ingestion Layer)
-    B --> C{Data Processing}
-    C -->|Real-time| D[Stream Analytics]
-    C -->|Batch| E[Data Lake]
-    
-    D --> F[Geospatial Mapping]
-    D --> G[Sentiment Analysis]
-    
-    E --> H[Predictive Budgeting]
-    E --> I[Resource Allocation]
-    
-    F & G & H & I --> J((Analytics Dashboard))
-```
+| 🏠 **Citizen** | `citizen@janvikas.ai` | `password123` | Submit issues, track status, propose to tenders |
+| 🏛️ **Officer** | `officer@janvikas.ai` | `password123` | Dashboard, AI insights, map view |
+| 🏢 **Department** | `dept@janvikas.ai` | `password123` | Create Tenders, manage proposals and projects |
+| 🤝 **NGO** | `ngo@janvikas.ai` | `password123` | View map, submit tender proposals |
+| 🛡️ **Admin** | `admin@janvikas.ai` | `password123` | System-wide administration |
 
 ---
 
 ## 🌐 API Routes
 
-### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login & get JWT token |
-| GET | `/api/auth/me` | Get current user (protected) |
-| PUT | `/api/auth/profile` | Update profile (protected) |
-| PUT | `/api/auth/change-password` | Change password (protected) |
-
 ### Submissions
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/submissions` | Create new submission |
-| GET | `/api/submissions` | Get all submissions (filtered) |
-| GET | `/api/submissions/:id` | Get single submission |
-| PATCH | `/api/submissions/:id/status` | Update status (MP/Admin) |
-| POST | `/api/submissions/:id/vote` | Upvote a submission |
-| GET | `/api/submissions/map` | Get geo-coordinates for map |
+| GET | `/api/submissions/map` | Get geo-coordinates for city map |
+| GET | `/api/submissions/:id` | Get single submission details |
+| PUT | `/api/submissions/:id/status` | Update status + note/rejection reason |
+| POST | `/api/submissions/:id/feedback` | Post citizen feedback on resolution |
 
-### AI
+### Tenders
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/ai/recommendations` | AI-ranked priority queue for MP |
-| GET | `/api/ai/duplicates` | Detected duplicate clusters |
-| GET | `/api/ai/summary` | Executive summary for district |
-| GET | `/api/ai/clusters` | Semantic topic clusters |
+| GET | `/api/tenders` | Get all open tenders |
+| GET | `/api/tenders/latest` | Get latest open tenders for landing page |
+| GET | `/api/tenders/department/mine` | Department manages their own tenders |
+| POST | `/api/tenders` | Create new tender |
+| POST | `/api/tenders/:id/propose` | Submit a proposal (NGO/Citizen) |
+| PATCH | `/api/tenders/:id/proposals/:proposalId`| Award, Reject or Shortlist a proposal |
 
-### Analytics
+### Auth
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/analytics/overview` | KPI stats for dashboard |
-| GET | `/api/analytics/trends` | Monthly trend data |
-| GET | `/api/analytics/categories` | Category breakdown |
-
----
-
-## 🔮 Future Scope
-
-```mermaid
-roadmap
-    title JanVikas AI Roadmap
-    section Phase 1 - Current (MVP)
-        Citizen submission portal          : done, 2024-01, 2024-03
-        AI priority engine                 : done, 2024-02, 2024-03
-        Official dashboard + analytics     : done, 2024-02, 2024-04
-        Admin panel                        : done, 2024-03, 2024-04
-    section Phase 2 - Enhancement
-        WhatsApp Bot integration           : 2024-05, 2024-06
-        Real LLM integration (Gemini API)  : 2024-05, 2024-07
-        Push notifications via FCM         : 2024-06, 2024-07
-        Mobile app (React Native)          : 2024-06, 2024-08
-    section Phase 3 - Scale
-        Multi-constituency Official accounts : 2024-09, 2024-10
-        Government API integration (Data.gov.in) : 2024-09, 2024-11
-        Blockchain audit trail             : 2024-10, 2024-12
-        National deployment                : 2024-11, 2025-01
-```
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+| POST | `/api/auth/login` | Login (Returns `ACCOUNT_DISABLED` if inactive) |
 
 ---
 

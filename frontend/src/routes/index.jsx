@@ -21,7 +21,6 @@ import ForgotPassword from '../pages/auth/ForgotPassword';
 import CitizenDashboard from '../pages/citizen/CitizenDashboard';
 import SubmitIssue from '../pages/citizen/SubmitIssue';
 import MySubmissions from '../pages/citizen/MySubmissions';
-import TrackSubmission from '../pages/citizen/TrackSubmission';
 import CitizenProfile from '../pages/citizen/Profile';
 import CitizenNotifications from '../pages/citizen/Notifications';
 
@@ -43,9 +42,14 @@ import AdminDatasets from '../pages/admin/AdminDatasets';
 
 // Shared Pages
 import AccountManagement from '../pages/shared/AccountManagement';
+import CityComplaintMap from '../pages/shared/CityComplaintMap';
+import SubmissionDetail from '../pages/shared/SubmissionDetail';
+import TenderList from '../pages/shared/TenderList';
+import TenderDetail from '../pages/shared/TenderDetail';
 
 // Department Pages
 import DepartmentDashboard from '../pages/department/DepartmentDashboard';
+import DepartmentTenders from '../pages/department/DepartmentTenders';
 
 // NGO Pages
 import NGODashboard from '../pages/ngo/NGODashboard';
@@ -83,13 +87,21 @@ const AppRoutes = () => {
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         
+        {/* Shared Dashboard Routes (accessible by multiple roles) */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/city-map" element={<CityComplaintMap />} />
+          <Route path="/submissions/:id" element={<SubmissionDetail />} />
+          <Route path="/tenders" element={<TenderList />} />
+          <Route path="/tenders/:id" element={<TenderDetail />} />
+        </Route>
+
         {/* Citizen Routes */}
         <Route path="/citizen" element={<RoleRoute allowedRoles={['citizen']} />}>
           <Route element={<DashboardLayout />}>
             <Route index element={<CitizenDashboard />} />
             <Route path="submit" element={<SubmitIssue />} />
             <Route path="submissions" element={<MySubmissions />} />
-            <Route path="track/:id" element={<TrackSubmission />} />
+            <Route path="track/:id" element={<SubmissionDetail />} />
             <Route path="profile" element={<CitizenProfile />} />
             <Route path="notifications" element={<CitizenNotifications />} />
           </Route>
@@ -101,6 +113,7 @@ const AppRoutes = () => {
             <Route index element={<OfficerDashboard />} />
             <Route path="analytics" element={<OfficerAnalytics />} />
             <Route path="submissions" element={<OfficerSubmissions />} />
+            <Route path="submit" element={<SubmitIssue />} />
             <Route path="projects" element={<OfficerProjects />} />
             <Route path="map" element={<OfficerMap />} />
             <Route path="ai-insights" element={<OfficerAIInsights />} />
@@ -130,7 +143,11 @@ const AppRoutes = () => {
             <Route index element={<DepartmentDashboard />} />
             <Route path="accounts" element={<AccountManagement />} />
             <Route path="submissions" element={<OfficerSubmissions />} />
+            <Route path="submit" element={<SubmitIssue />} />
             <Route path="projects" element={<OfficerProjects />} />
+            <Route path="tenders" element={<DepartmentTenders />} />
+            <Route path="tenders/:action" element={<DepartmentTenders />} />
+            <Route path="tenders/:action/:id" element={<DepartmentTenders />} />
             <Route path="analytics" element={<OfficerAnalytics />} />
             <Route path="profile" element={<CitizenProfile />} />
           </Route>
@@ -141,7 +158,9 @@ const AppRoutes = () => {
           <Route element={<DashboardLayout />}>
             <Route index element={<NGODashboard />} />
             <Route path="submissions" element={<OfficerSubmissions />} />
+            <Route path="submit" element={<SubmitIssue />} />
             <Route path="profile" element={<CitizenProfile />} />
+            <Route path="notifications" element={<CitizenNotifications />} />
           </Route>
         </Route>
       </Route>

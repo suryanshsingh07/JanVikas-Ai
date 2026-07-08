@@ -14,7 +14,7 @@ const {
   detectLanguage,
   extractKeywords,
 } = require('../services/aiService');
-const { rankProjects } = require('../services/recommendationService');
+const { rankSubmissions } = require('../services/recommendationService');
 
 /**
  * @route   POST /api/ai/analyze
@@ -77,19 +77,16 @@ const duplicateCheck = asyncHandler(async (req, res) => {
 const getRecommendations = asyncHandler(async (req, res) => {
   const { state, district, category, limit = 10 } = req.query;
 
-  const filter = {};
+  const filter = {
+    status: { $in: ['pending', 'reviewing'] },
+  };
   if (state) filter['location.state'] = state;
   if (district) filter['location.district'] = district;
   if (category) filter.category = category;
 
-  const projects = await Project.find(filter)
-    .populate({
-      path: 'relatedSubmissions',
-      select: 'votes title status',
-    })
-    .limit(50);
+  const submissions = await Submission.find(filter).limit(100);
 
-  const ranked = rankProjects(projects).slice(0, Number(limit));
+  const ranked = rankSubmissions(submissions).slice(0, Number(limit));
 
   res.json({
     success: true,

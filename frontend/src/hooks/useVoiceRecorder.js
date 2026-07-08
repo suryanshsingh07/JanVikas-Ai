@@ -1,17 +1,42 @@
 import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-export const useVoiceRecorder = (language = 'hi-IN') => {
+export const useVoiceRecorder = (language = 'en-US') => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [audioBlob, setAudioBlob] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [resolvedLanguage, setResolvedLanguage] = useState(() => {
+    if (typeof window === 'undefined') return 'en-US';
+    if (language === 'auto') return navigator.language || 'en-US';
+    return language;
+  });
+  const [recognitionError, setRecognitionError] = useState(null);
   
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
+
+  const getRecognitionErrorMessage = (error) => {
+    switch (error) {
+      case 'network':
+        return 'Speech recognition failed because the browser could not reach the recognition service. Check your connection and try again.';
+      case 'not-allowed':
+        return 'Microphone access was denied. Please allow microphone permissions to use voice dictation.';
+      case 'service-not-allowed':
+        return 'The browser blocked speech recognition service access. Please try again in a different browser or check your settings.';
+      case 'no-speech':
+        return 'No speech detected. Please speak clearly into the microphone.';
+      case 'audio-capture':
+        return 'Unable to capture audio from the microphone. Make sure your microphone is connected and enabled.';
+      case 'aborted':
+        return 'Speech recognition was aborted. You can try again.';
+      default:
+        return `Speech recognition error: ${error}`;
+    }
+  };
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -21,7 +46,7 @@ export const useVoiceRecorder = (language = 'hi-IN') => {
         recognitionRef.current = new SpeechRecognition();
         recognitionRef.current.continuous = true;
         recognitionRef.current.interimResults = true;
-        
+
         recognitionRef.current.onresult = (event) => {
           let currentTranscript = '';
           for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -36,8 +61,17 @@ export const useVoiceRecorder = (language = 'hi-IN') => {
 
         recognitionRef.current.onerror = (event) => {
           console.error('Speech recognition error', event.error);
+          const message = getRecognitionErrorMessage(event.error);
+          setRecognitionError(message);
           if (event.error !== 'no-speech') {
-            toast.error(`Recognition error: ${event.error}`);
+            toast.error(message);
+          }
+          if (recognitionRef.current) {
+            try {
+              recognitionRef.current.stop();
+            } catch (stopError) {
+              console.warn('Failed to stop recognition after error', stopError);
+            }
           }
         };
       }
@@ -48,8 +82,13 @@ export const useVoiceRecorder = (language = 'hi-IN') => {
 
   // Update language when it changes
   useEffect(() => {
+    const targetLanguage = language === 'auto'
+      ? (typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US')
+      : language;
+
+    setResolvedLanguage(targetLanguage);
     if (recognitionRef.current) {
-      recognitionRef.current.lang = language;
+      recognitionRef.current.lang = targetLanguage;
     }
   }, [language]);
 
@@ -75,10 +114,14 @@ export const useVoiceRecorder = (language = 'hi-IN') => {
       
       if (recognitionRef.current) {
         setTranscript('');
+        setRecognitionError(null);
         try {
+          recognitionRef.current.lang = resolvedLanguage;
           recognitionRef.current.start();
         } catch (e) {
-          // If already started, ignore
+          const message = getRecognitionErrorMessage(e.name || e.message || 'unknown');
+          setRecognitionError(message);
+          toast.error(message);
         }
       }
 
@@ -98,16 +141,27 @@ export const useVoiceRecorder = (language = 'hi-IN') => {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+      try {
+        mediaRecorderRef.current.stop();
+      } catch (e) {
+        console.warn('Failed to stop media recorder', e);
+      }
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Failed to stop speech recognition', e);
+        }
       }
       clearInterval(timerRef.current);
       setIsRecording(false);
       setIsPaused(false);
+      setRecognitionError(null);
     }
+  };
+
+  const clearTranscript = () => {
+    setTranscript('');
   };
 
   const clearRecording = () => {
@@ -123,9 +177,11 @@ export const useVoiceRecorder = (language = 'hi-IN') => {
     setTranscript,
     audioBlob,
     recordingTime,
+    recognitionError,
     startRecording,
     stopRecording,
     clearRecording,
+    clearTranscript,
     hasSupport: !!recognitionRef.current
   };
 };

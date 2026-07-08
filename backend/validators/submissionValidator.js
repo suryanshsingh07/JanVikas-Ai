@@ -43,13 +43,13 @@ const createSubmissionValidator = [
 ];
 
 const listSubmissionsValidator = [
-  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be 1-100'),
-  query('category').optional().isIn(VALID_CATEGORIES).withMessage('Invalid category'),
-  query('status').optional().isIn(['pending', 'reviewing', 'approved', 'in_progress', 'resolved', 'rejected']),
-  query('priority').optional().isIn(['low', 'medium', 'high', 'critical']),
-  query('sortBy').optional().isIn(['createdAt', 'votes', 'priorityScore', 'status']),
-  query('order').optional().isIn(['asc', 'desc']),
+  query('page').optional({ values: 'falsy' }).isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional({ values: 'falsy' }).isInt({ min: 1, max: 100 }).withMessage('Limit must be 1-100'),
+  query('category').optional({ values: 'falsy' }).isIn(VALID_CATEGORIES).withMessage('Invalid category'),
+  query('status').optional({ values: 'falsy' }).isIn(['pending', 'reviewing', 'approved', 'in_progress', 'resolved', 'rejected']),
+  query('priority').optional({ values: 'falsy' }).isIn(['low', 'medium', 'high', 'critical']),
+  query('sortBy').optional({ values: 'falsy' }).isIn(['createdAt', 'votes', 'priorityScore', 'aiAnalysis.priorityScore', 'status']),
+  query('order').optional({ values: 'falsy' }).isIn(['asc', 'desc']),
 ];
 
 module.exports = { createSubmissionValidator, listSubmissionsValidator };

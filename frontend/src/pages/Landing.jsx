@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import StatCounter from '../components/ui/StatCounter';
 import api from '../services/api';
+import { formatRelativeTime } from '../utils/formatters';
 
 /* ── Particle Background ── */
 const ParticleBackground = () => {
@@ -170,6 +171,29 @@ const Landing = () => {
       }
     };
     fetchStats();
+  }, []);
+
+  const [latestTenders, setLatestTenders] = useState([]);
+  useEffect(() => {
+    const fetchTenders = async () => {
+      try {
+        const res = await api.get('/tenders/latest');
+        if (res.success) {
+          setLatestTenders(res.data);
+          return;
+        }
+      } catch (err) {
+        console.warn('Latest tenders endpoint unavailable, falling back to /tenders');
+      }
+
+      try {
+        const res = await api.get('/tenders', { params: { status: 'open', limit: 6 } });
+        if (res.success) setLatestTenders(res.data || []);
+      } catch (fallbackErr) {
+        console.error('Failed to fetch public tenders', fallbackErr);
+      }
+    };
+    fetchTenders();
   }, []);
 
   const aiFeatures = [
@@ -497,6 +521,69 @@ const Landing = () => {
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {aiFeatures.map((f, i) => <AIFeatureCard key={i} {...f} delay={i * 0.08} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ LATEST TENDERS ══ */}
+      <section id="tenders" className="py-24 bg-surface/50 border-y border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-4">Latest Government Tenders</h2>
+              <p className="text-gray-500 dark:text-gray-400 max-w-2xl">Open opportunities for NGOs, Citizens, and Contractors to bid and collaborate with city departments.</p>
+            </div>
+            <Link to={isAuthenticated ? '/tenders' : '/login'} className="inline-flex items-center gap-2 text-primary-500 hover:text-primary-600 font-medium group">
+              View All Tenders <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {latestTenders.length > 0 ? latestTenders.map((tender, i) => {
+              const daysLeft = tender.deadline
+                ? Math.max(0, Math.ceil((new Date(tender.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+                : null;
+              
+              return (
+                <motion.div
+                  key={tender._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="glass-card rounded-2xl p-6 border border-border group hover:border-primary-500/30 transition-all"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="px-3 py-1 bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                      {tender.category}
+                    </span>
+                    {daysLeft !== null && (
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${daysLeft <= 3 ? 'text-danger bg-danger/10' : 'text-gray-500 bg-surface border border-border'}`}>
+                        {daysLeft === 0 ? 'Closes Today' : `${daysLeft} days left`}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">{tender.title}</h3>
+                  <p className="text-sm text-gray-500 line-clamp-2 mb-4">{tender.description}</p>
+                  <div className="flex items-center justify-between text-sm pt-4 border-t border-border">
+                    <div className="flex flex-col">
+                      <span className="text-xs text-gray-400">Department</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300">{tender.createdBy?.name || 'Govt Department'}</span>
+                    </div>
+                    {tender.estimatedBudget && (
+                      <div className="flex flex-col text-right">
+                        <span className="text-xs text-gray-400">Budget</span>
+                        <span className="font-medium text-gray-600 dark:text-gray-300">₹{(tender.estimatedBudget / 100000).toFixed(1)}L</span>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            }) : (
+              <div className="col-span-full text-center py-12 text-gray-500">
+                No open tenders at the moment.
+              </div>
+            )}
           </div>
         </div>
       </section>

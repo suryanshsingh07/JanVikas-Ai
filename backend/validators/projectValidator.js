@@ -32,8 +32,8 @@ const createProjectValidator = [
 
   body('estimatedBudget')
     .notEmpty().withMessage('Estimated budget is required')
-    .isNumeric().withMessage('Budget must be a number')
-    .isFloat({ min: 0 }).withMessage('Budget must be non-negative'),
+    .toFloat()
+    .isFloat({ min: 0 }).withMessage('Budget must be a non-negative number'),
 ];
 
 const updateProjectStatusValidator = [
